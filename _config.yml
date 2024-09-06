@@ -1,7 +1,7 @@
 # Site settings
-title:       Data People Blog
-email:       adityagp@berkeley.edu
-author:      Data People
+title:       The Data People Research Blog
+email:       
+author:      
 description: "A research blog on next-generation data infrastructure that is usable, intelligent, and efficient"
 baseurl: ""
 url: "https://data-people-group.github.io"
