@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Lightweight Nudges for More Accurate Retrieval in RAG Pipelines &#8211; The Data People Research Blog</title>
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//maxcdn.bootstrapcdn.com">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Make your retrieval pipelines more effective with this novel and lightweight fine-tuning approach">
+    <link rel="manifest" type="application/manifest+json; charset=utf-8" href="/manifest.json" />
+    <meta name="robots" content="all">
+    <meta name="author" content="">
+    
+    <meta name="keywords" content="blogs">
+    <link rel="canonical" href="http://localhost:4000/blogs/2024/09/05/nudge/">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for The Data People Research Blog" href="/feed.xml" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css?202501112111" type="text/css">
+
+    <!-- Fonts -->
+    
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    
+
+    <!-- MathJax -->
+    
+    <script type="text/javascript" async
+        src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    
+
+    <!-- Verifications -->
+    
+    
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Lightweight Nudges for More Accurate Retrieval in RAG Pipelines">
+    <meta property="og:description" content="A research blog on next-generation data infrastructure that is usable, intelligent, and efficient">
+    <meta property="og:url" content="http://localhost:4000/blogs/2024/09/05/nudge/">
+    <meta property="og:site_name" content="The Data People Research Blog">
+    
+    <meta property="og:image" content="http://localhost:4000/images/me.jpeg">
+    
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    
+    <meta name="twitter:title" content="Lightweight Nudges for More Accurate Retrieval in RAG Pipelines" />
+    <meta name="twitter:description" content="Make your retrieval pipelines more effective with this novel and lightweight fine-tuning approach" />
+    <meta name="twitter:url" content="http://localhost:4000/blogs/2024/09/05/nudge/" />
+    
+    <meta name="twitter:image" content="http://localhost:4000/images/me.jpeg" />
+    
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/favicon-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    
+</head>
+
+<body class="site">
+  
+	
+
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="/" class="site-title"><img width="150px" src="/images/datapeople.png" /></a>
+      <nav class="site-nav">
+        
+
+
+
+    
+        
+        
+        
+            <a class="nav-link" href="/about/">About Data People</a>
+        
+    
+
+    
+
+
+      </nav>
+      <div class="clearfix"></div>
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h1>Lightweight Nudges for More Accurate Retrieval in RAG Pipelines</h1>
+  
+    <span class="post-meta">By <a href="https://szeighami.github.io/">Sepanta Zeighami</a>, <a href="https://adityagp.net">Aditya Parameswaran</a></span><br>
+  
+  <span class="post-meta">Sep 5, 2024</span><br>
+  
+  <span class="post-meta small">
+  
+    5 minute read
+  
+  </span>
+</div>
+
+<article class="post-content">
+  <p>Retrieval based on pre-trained embedding similarity is the standard approach for developing RAG pipelines that incorporate external data sources, including documents, images, tables, and text. And yet, out of the box, these models perform very poorly, retrieving data records that are often completely unrelated to the queries.</p>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="https://data-people-group.github.io/images/nudge/nudge-icon.jpg" style="width:30%" />
+ <figcaption style="text-align: center; width:50%; font-style: italic; margin: auto;">NUDGE your embeddings to where they should be.</figcaption>
+</figure>
+
+<p>We’ve developed NUDGE, a simple and lightweight fine-tuning method that boosts accuracy when retrieving text/images using semantic similarity with pre-trained embedding models. In a nutshell, NUDGE directly modifies the embeddings of data records to maximize the similarity between training queries and their ground-truth answers. NUDGE does so <em>non-parametrically.</em> Non-parametric means that NUDGE does not modify model parameters to generate better embeddings, as fine-tuning the embedding model, or training adaptors (e.g., <a href="https://docs.llamaindex.ai/en/stable/examples/finetuning/embeddings/finetune_embedding_adapter/">link</a> or <a href="https://research.trychroma.com/embedding-adapters">link</a>) would.  Instead, NUDGE <em>directly</em> changes the embeddings themselves. Compared with fine-tuning the pre-trained model and training adaptors, <strong>NUDGE provides 3.3x and 4.3x higher increase in accuracy and runs 200x and 3x faster</strong>, respectively.</p>
+
+<p>Given these impressive results, <em>we think using NUDGE is a no-brainer</em> – we encourage you to try it out and let us know what you think! You can read more about the technical details underlying NUDGE <a href="https://arxiv.org/abs/2409.02343">here</a>, or try it out yourself <a href="https://github.com/szeighami/nudge/">here</a>.  We provide more high-level intuition as well as experimental results below.</p>
+
+<p><strong>The Problem: k-NN Retrieval</strong><br />
+We have a dataset with a number of data records, each of which can be a text chunk, or an image. <em>k</em>-NN retrieval first embeds each data record as a <em>d</em>-dimensional vector. Embedding is done using a pre-trained embedding model, e.g., OpenAI’s text embedding model for text, or CLIP for images. To answer a query, <em>k</em>-NN retrieval similarly embeds the query and returns the top-<em>k</em> data records whose embeddings have the highest similarity to the query embedding, where typically cosine similarity is used as the similarity metric. For the purpose of fine-tuning, we additionally are given a training query set, where for each query we know its ground-truth answer(s).</p>
+
+<p><strong>The NUDGE Approach</strong><br />
+NUDGE changes the data embeddings based on the training set <em>non-parametrically</em> to create fine-tuned data embeddings. That is, it does not modify the model parameters, as fine-tuning the pre-trained model or training adaptors would. Instead, it modifies the data record embeddings themselves to maximize the similarity between queries and their ground-truth answers.</p>
+
+<p><em>Why is a non-parametric approach helpful?</em> A non-parametric fine-tuning approach is extremely lightweight by design. It only requires updating the data embeddings based on mathematically derived formulas, as opposed to, for example, fine-tuning the embedding model, which requires training resources equivalent to training the embeddings in the first place. Meanwhile, our experiments show that NUDGE’s simple update rules are more effective and efficient than fine-tuning the pre-trained model or training adaptors.</p>
+
+<p><em>How does this work?</em> NUDGE derives its update rules by solving constrained optimization problems. The objective is to change data embeddings to maximize the similarity between queries and their ground-truth answers. However, changing the data embeddings <em>too much</em> can lead to overfitting the training queries and losing the semantics captured in the data embeddings. To avoid that, NUDGE adds constraints on how the data embeddings can change. The figure below shows this process.</p>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="https://data-people-group.github.io/images/nudge/nudge_overview.jpg" style="width:50%" />
+  <figcaption style="text-align: left; width:55%; font-style: italic; margin: auto;">Figure 1. NUDGE changes data embeddings within a constrained region (shown in dashed lines) to maximize similarity with training queries. Data embeddings are colored based on queries for which they are the ground-truth answers.</figcaption>
+</figure>
+
+<p>As the figure shows, data embeddings are moved toward the training queries for which they are the ground-truth answers to maximize the similarity between the two. Meanwhile, how the embeddings can change is constrained to avoid overfitting. An example of the constraints used is also shown in the figure. The constraint (1) forces the new embeddings to be normalized (i.e., the new embeddings fall on the unit ball), and (2) bounds the magnitude of change to the embeddings.</p>
+
+<p><em>Variants of the approach.</em> In the paper, we present two methods NUDGE-N and NUDGE-M. NUDGE-N optimally solves the constraint optimization problem described above. NUDGE-M solves a variant that only considers constraint (2) above, allowing the new embeddings not to be normalized. We present closed-form solutions for both, leading to simple formulas for fine-tuning the embeddings.</p>
+
+<p><strong>Experimental Evaluation</strong><br />
+We performed experiments on various embedding models and datasets, for both text and image retrieval.</p>
+
+<p><strong>Embedding Models</strong>. For text, we use BGE-small (<a href="https://huggingface.co/BAAI/bge-small-en-v1.5">link</a>), GTE-large (<a href="https://huggingface.co/Alibaba-NLP/gte-large-en-v1.5">link</a>), and OpenAI’s text-embedding-large-3 (<a href="https://platform.openai.com/docs/guides/embeddings/embedding-models">link</a>), respectively referred to as BGE-S, GTE-L and TE3-L. For image retrieval, we use two CLIP variants (<a href="https://arxiv.org/abs/2103.00020">link</a>), ViT-B/32 and ViT-L/14, respectively referred to as CLIP-B and CLIP-L.</p>
+
+<p><strong>Datasets</strong>. We present results on standard text retrieval datasets (SciFacts, Fever, ArguAna,TriviaQA, HotpotQA, Natural Questions and NF-Corpus, datasets available <a href="https://huggingface.co/sepz">here</a>) and image retrieval datasets (<a href="http://cocodataset.org">COCO</a> and <a href="https://huggingface.co/datasets/nlphuji/flickr30k">Flickr</a>). See the paper for dataset details.</p>
+
+<p><strong>Baselines</strong>. We compare results with training an adaptor model to transform the output of the pre-trained model, referred to as Adaptor, and fine-tuning the pre-trained model itself, referred to as PTFT.</p>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="https://data-people-group.github.io/images/nudge/res_text.png" style="width:100%" />
+  <figcaption style="text-align: left; width:100%; font-style: italic; margin: auto;">Table 1. Average accuracy across text datasets (R@k is Recall@k) . PTFT cannot be run on TE3-L since the model is closed-source and OpenAI does not provide an embedding fine-tuning API. It also cannot be run on GTE-L within a reasonable time frame with a single GPU.</figcaption>
+</figure>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="https://data-people-group.github.io/images/nudge/res_img.png" style="width:70%" />
+  <figcaption style="text-align: center; width:73%; font-style: italic; margin: auto;">Table 2. Average accuracy across image datasets (R@k is Recall@k).</figcaption>
+</figure>
+
+<p><strong>Results.</strong> NUDGE variants consistently outperform other fine-tuning methods (see Tables 1-2). NUDGE-N provides, on average across datasets and for all embedding models, around 10-14% increase in NDCG@10. PTFT and Adaptor, on the other hand, only improve accuracy by at most 4%.</p>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="https://data-people-group.github.io/images/nudge/res_runtime.png" style="width:40%" />
+  <figcaption style="text-align: left; width:45%; font-style: italic; margin: auto;">Table 3. Run time of different methods on BGE-S using an NVIDIA A100 or a 32-core CPU, excluding time to embed the documents.</figcaption>
+</figure>
+
+<p>Perhaps surprisingly, NUDGE provides this substantial accuracy boost <em>while running only in a few minutes even on a CPU</em>. On CPU, NUDGE is more than 7x faster than Adaptor, while PTFT cannot be run on a CPU. On GPU, it is, respectively, 3x and 200x faster.</p>
+
+<p><strong>Summary</strong><br />
+We presented NUDGE—a simple lightweight fine-tuning method that fine-tunes embeddings in minutes on a CPU, and consistently provides 10-15% accuracy boosts. To fine-tune embeddings, NUDGE directly modifies embeddings to narrow the gap between queries and data, instead of changing the embedding models. It does so by solving constrained optimization problems and deriving mathematical formulae to update embeddings. This leads to simple, efficient, and extremely effective update rules to fine-tune embeddings. NUDGE your embeddings for optimized retrieval <a href="https://github.com/szeighami/nudge/">here</a>, and read more <a href="https://arxiv.org/abs/2409.02343">here</a>. We’d love to hear any feedback!</p>
+
+</article>
+
+
+  <div class="share-page">
+  Share this post!
+
+  <div class="share-links">
+    
+      <a class="fa fa-facebook" href="https://facebook.com/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fblogs%2F2024%2F09%2F05%2Fnudge%2F" rel="nofollow" target="_blank" title="Share on Facebook"></a>
+    
+
+    
+      <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?text=Lightweight+Nudges+for+More+Accurate+Retrieval+in+RAG+Pipelines&amp;url=http%3A%2F%2Flocalhost%3A4000%2Fblogs%2F2024%2F09%2F05%2Fnudge%2F" rel="nofollow" target="_blank" title="Share on Twitter"></a>
+    
+
+    
+
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/shareArticle?url=http%3A%2F%2Flocalhost%3A4000%2Fblogs%2F2024%2F09%2F05%2Fnudge%2F&amp;title=Lightweight+Nudges+for+More+Accurate+Retrieval+in+RAG+Pipelines" rel="nofollow" target="_blank" title="Share on LinkedIn"></a>
+    
+
+    
+
+    
+
+    
+      <a class="fa fa-reddit" href="https://www.reddit.com/submit?url=http%3A%2F%2Flocalhost%3A4000%2Fblogs%2F2024%2F09%2F05%2Fnudge%2F&amp;title=Lightweight+Nudges+for+More+Accurate+Retrieval+in+RAG+Pipelines" rel="nofollow" target="_blank" title="Share on Reddit"></a>
+    
+
+    
+
+    
+      <a class="fa fa-hacker-news" onclick="parent.postMessage('submit','*')" href="https://news.ycombinator.com/submitlink?u=http%3A%2F%2Flocalhost%3A4000%2Fblogs%2F2024%2F09%2F05%2Fnudge%2F&amp;t=Lightweight+Nudges+for+More+Accurate+Retrieval+in+RAG+Pipelines" rel="nofollow" target="_blank" title="Share on Hacker News"></a>
+    
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="center">
+  <div class="measure">
+    <small>
+      Theme crafted with &lt;3 by <a href="https://johno.com/">John Otander</a> (<a href="https://twitter.com/4lpine">@4lpine</a>).<br>
+      &lt;/&gt; available on <a href="https://github.com/johno/pixyll">GitHub</a>.
+    </small>
+  </div>
+</footer>
+
+<script type="text/javascript">
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js")
+    }
+</script>
+
+</body>
+</html>

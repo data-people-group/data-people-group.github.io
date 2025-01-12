@@ -115,6 +115,7 @@ redcarpet:
   extensions: ['smart', 'tables', 'with_toc_data']
 permalink:    pretty
 paginate:     4
+future:       true
 sass:
   style: compressed
 plugins:
