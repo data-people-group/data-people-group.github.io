@@ -169,7 +169,7 @@ DocWrangler is part of our broader mission to make LLM-powered data processing m
 
 We're excited to see how you'll use DocWrangler in your own workflows and look forward to your feedback as we continue improving the IDE. Your experiences and suggestions will help shape the future of LLM-powered data processing tools!
 
-[^1]: This iterative refinement is necessary because of a fundamental design challenge in complex workflows—what [Subramonyam et al.](https://arxiv.org/abs/2309.14459) call bridging the "gulf of envisioning" between your goals and effective LLM interactions.
+[^1]: This iterative refinement is necessary because of a fundamental design challenge in complex LLM workflows—what [Subramonyam et al.](https://arxiv.org/abs/2309.14459) call bridging the "gulf of envisioning" between your goals and effective LLM interactions.
 
 [^2]: LLM-powered data processing is a rapidly growing field, with many research teams and startups developing systems. Some, like DocETL, focus on executing open-ended dataflow operations (e.g., map, reduce), such as [Palimpzest](https://vldb.org/cidrdb/papers/2025/p12-liu.pdf) from MIT, [LOTUS](https://arxiv.org/abs/2407.11418) from Stanford, and [Sycamore](https://arxiv.org/abs/2409.00847) from Aryn. Others target specific tasks, such as Lloom for topic analysis and DiscipLink for aggregating and linking research papers based on user queries.
 
