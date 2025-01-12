@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>The Data People Research Blog</title>
+    <description>A research blog on next-generation data infrastructure that is usable, intelligent, and efficient</description>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
+    
+      <item>
+        <title>Interactive LLM-Powered Data Processing with DocWrangler</title>
+        <description>&lt;p&gt;&lt;em&gt;TLDR:&lt;/em&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;em&gt;Try DocWrangler at &lt;a href=&quot;http://docetl.org/playground&quot;&gt;docetl.org/playground&lt;/a&gt;&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Star our &lt;a href=&quot;https://github.com/ucbepic/docetl&quot;&gt;GitHub repository&lt;/a&gt; to follow development&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Join our &lt;a href=&quot;https://discord.com/invite/fHp7B2X3xx&quot;&gt;Discord community&lt;/a&gt; for technical discussions and support&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;LLM-powered data processing pipelines have a lot of promise, but building them is painful. &lt;strong&gt;Getting LLMs to do what you want involves constantly cycling between writing prompts, inspecting results, and refining both your prompts and your goals&lt;/strong&gt; as you discover what’s actually possible.&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; So, we built DocWrangler, an interactive development environment (IDE) that makes this process dramatically easier through instant feedback, visual exploration tools, and AI-powered assistance. &lt;strong&gt;DocWrangler is open-source, and a hosted version is available at &lt;a href=&quot;http://docetl.org/playground&quot;&gt;docetl.org/playground&lt;/a&gt; (no sign-up required).&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;In this blog post, we’ll show you how DocWrangler improves the experience of working with LLM pipelines, whether you’re new to LLM-powered data processing or an experienced practitioner looking to streamline your workflow. We’ll discuss our motivations for building DocWrangler, demonstrate its features through practical examples, and share tips we’ve learned from successful users. Finally, we’ll conclude with what’s next.&lt;/p&gt;
+
+&lt;h2 id=&quot;why-we-built-docwrangler&quot;&gt;Why We Built DocWrangler&lt;/h2&gt;
+
+&lt;p&gt;LLM-powered data processing enables people to tackle complex tasks on unstructured data. Instead of writing code or training models to extract information from text and summarize this information across document boundaries, or hiring domain experts to make sense of the data, you can express what you want in natural language and let LLMs handle the heavy lifting. For example, imagine analyzing a collection of customer support call transcripts. You might build a pipeline like this:&lt;/p&gt;
+
+&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;&quot;&gt;
+  &lt;img src=&quot;/images/docwrangler/samplepipeline.png&quot; style=&quot;width:100%&quot; /&gt;
+ &lt;figcaption style=&quot;text-align: center; width:100%; font-style: italic; margin: auto;&quot;&gt;Example pipeline for analyzing customer support call transcripts, and challenges users face at each LLM-powered step.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;Our system, &lt;a href=&quot;https://arxiv.org/abs/2410.12189&quot;&gt;DocETL&lt;/a&gt;, provides a declarative way to build these pipelines, similar to how SQL lets you express database operations without worrying about execution details.&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt; Since our release in &lt;a href=&quot;https://data-people-group.github.io/blogs/2024/09/24/docetl/&quot;&gt;September 2024&lt;/a&gt;, however, we’ve observed that many users struggle to write LLM-powered data processing pipelines effectively. In addition to the stage-specific challenges in the figure above, the challenges run deeper than just &lt;em&gt;“prompt engineering is hard.”&lt;/em&gt; Users often start with one goal in mind, &lt;a href=&quot;https://dl.acm.org/doi/10.1145/3654777.3676450&quot;&gt;only to discover they actually want something different once they see initial results&lt;/a&gt;. For example, when analyzing customer support conversations, you might think you want to extract specific issues mentioned. But after seeing the LLM’s outputs, you realize what you really want is to identify patterns in how support agents handle different types of complaints—something you couldn’t articulate until you saw the data processed in different ways.&lt;/p&gt;
+
+&lt;p&gt;This kind of iterative refinement isn’t unique to LLMs. For example, early data cleaning systems like &lt;a href=&quot;https://control.cs.berkeley.edu/pwheel-vldb.pdf&quot;&gt;Potter’s Wheel&lt;/a&gt; and &lt;a href=&quot;https://dl.acm.org/doi/10.1145/1978942.1979444&quot;&gt;Wrangler&lt;/a&gt; (which evolved into &lt;a href=&quot;https://www.alteryx.com/about-us/trifacta-is-now-alteryx-designer-cloud&quot;&gt;Trifacta&lt;/a&gt;) recognized that data transformation is inherently exploratory. Users need to see the effects of their changes immediately to understand if they’re moving in the right direction. LLM-powered data processing demands something more; an environment built around rapid iteration between examining data and refining pipelines, tools for exploring and validating LLM outputs at scale, and support for the natural evolution of analytical goals as you discover what’s possible with your data and the LLM (bridging the gulf of envisioning).&lt;/p&gt;
+
+&lt;p&gt;Existing development interfaces don’t adequately support this workflow. Traditional IDEs and LLM pipeline builders focus on chaining simple prompts rather than supporting complex data processing operations, and none provide the rich, immediate feedback loop needed to work effectively with LLMs. This is the gap DocWrangler aims to fill.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-is-docwrangler&quot;&gt;What is DocWrangler?&lt;/h2&gt;
+
+&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;&quot;&gt;
+  &lt;img src=&quot;/images/docwrangler/docwrangler_screenshot.png&quot; style=&quot;width:100%&quot; /&gt;
+ &lt;figcaption style=&quot;text-align: center; width:100%; font-style: italic; margin: auto;&quot;&gt;Screenshot of the DocWrangler IDE, publicly available at &lt;a href=&quot;http://docetl.org/playground&quot;&gt;docetl.org/playground&lt;/a&gt;.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;DocWrangler is an IDE designed for building and refining LLM-powered data processing pipelines&lt;/strong&gt;. While the core ideas behind DocWrangler could support any LLM data processing framework, our current implementation is built on top of DocETL. As the primary developers of DocETL and having worked closely with its growing user base, it was natural for us to start there.&lt;/p&gt;
+
+&lt;p&gt;The IDE adds an interactive layer that makes it easier to explore your data, experiment with different operations, and refine your pipelines based on what you discover. You can try it out at &lt;a href=&quot;docetl.org/playground&quot;&gt;docetl.org/playground&lt;/a&gt;, where we’ve included two example datasets to help you get started (click on Help -&amp;gt; Tutorials):&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.supremecourt.gov/oral_arguments/oral_arguments.aspx&quot;&gt;US Supreme Court oral arguments from 2024&lt;/a&gt;–this will cost $0.11 to run with gpt-4o-mini&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.kaggle.com/datasets/aimack/customer-service-chat-data-30k-rows&quot;&gt;Airline customer support chat logs&lt;/a&gt;–this will cost $0.05 to run with gpt-4o-mini&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;These datasets showcase different types of analysis you might want to perform with LLM-powered pipelines.&lt;/p&gt;
+
+&lt;h3 id=&quot;key-features&quot;&gt;Key Features&lt;/h3&gt;
+
+&lt;p&gt;Building LLM pipelines today involves several challenges: assessing LLM outputs at scale to catch issues like hallucinations or inconsistencies, making targeted improvements without getting lost in prompt engineering trial-and-error, and mastering new concepts like pipeline patterns and templating syntax, and even getting comfortable with the exploratory nature of data analysis. DocWrangler’s features directly address these pain points through rich visualization tools, in-context feedback mechanisms, and intelligent assistance. Let’s look at each in detail:&lt;/p&gt;
+
+&lt;h4 id=&quot;spreadsheet-interface-with-automatic-summary-overlays&quot;&gt;Spreadsheet Interface with Automatic Summary Overlays&lt;/h4&gt;
+
+&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;&quot;&gt;
+  &lt;iframe width=&quot;100%&quot; height=&quot;400&quot; src=&quot;https://www.youtube.com/embed/MGydMpvLTZc&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+  &lt;figcaption style=&quot;text-align: center; width:100%; font-style: italic; margin: auto;&quot;&gt;Demo of DocWrangler&apos;s spreadsheet interface with automatic summary overlays&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;DocWrangler combines a notebook-style pipeline editor with a spreadsheet-like output viewer. The editor lets you build your pipeline step by step, while the viewer provides functionality for exploring and validating outputs. In the output viewer, you can resize rows and columns, search within cells, and sort or filter columns–-capabilities that prove invaluable when working with LLM outputs. The search functionality is particularly useful for validating extractions and checking for hallucinations. For example, if you’ve asked the LLM to extract key phrases from documents, you can quickly search the source text to verify these phrases actually appear.&lt;/p&gt;
+
+&lt;p&gt;DocWrangler’s output viewer also offers basic automatic visualization capabilities, inspired by Trifacta. Based on the data type of each output field, the system generates appropriate visualizations to help you spot patterns and potential issues; e.g., for text fields, it shows histograms of word or character counts; for lists, it displays distributions of the number of elements; for categorical data, it automatically detects and visualizes the distribution of categories. These visualizations are very useful for sanity checking your pipeline’s behavior at a glance. For instance, if you’re extracting entities from documents, a sudden spike in the length distribution might indicate the LLM is being too verbose or including irrelevant information. Often we see some outputs even have too few words because the LLM “refused” to do the task, and the visualizations help detect these quickly.&lt;/p&gt;
+
+&lt;h4 id=&quot;in-situ-fine-grained-feedback-and-intelligent-prompt-refinement&quot;&gt;In-Situ Fine-Grained Feedback and Intelligent Prompt Refinement&lt;/h4&gt;
+
+&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;&quot;&gt;
+  &lt;iframe width=&quot;100%&quot; height=&quot;400&quot; src=&quot;https://www.youtube.com/embed/ZacAO-gmFJE?si=1d0OqUsraB5FdEmq&amp;amp;start=169&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+  &lt;figcaption style=&quot;text-align: center; width:100%; font-style: italic; margin: auto;&quot;&gt;Demo of DocWrangler&apos;s in-situ feedback and prompt refinement capabilities&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;Traditional approaches to prompt engineering fall short for real-world data processing tasks. Many methods rely on labeled examples to optimize prompts, but users rarely have these on hand. So, some systems try to use powerful LLMs like GPT-4 as oracles to generate labeled examples, but this assumes tasks have clear right and wrong answers. In reality, data processing tasks are often flexible—take “extract common complaints from customer feedback.” Should the LLM identify specific issues like “password reset email never arrived” or higher-level categories like “account access problems”? Users often discover their preferred granularity only after seeing some outputs.&lt;/p&gt;
+
+&lt;p&gt;Beyond these limitations, traditional prompt engineering forces users to mentally juggle between examining outputs, identifying issues, and figuring out how to fix them through prompt changes. DocWrangler takes a different approach, letting you provide feedback naturally as you inspect outputs. The interface shows one row at a time while maintaining context, with split views available to examine source documents or intermediate outputs side-by-side. You can attach observations directly to specific outputs—like “this summary missed key details” or “categorization is too granular here.”&lt;/p&gt;
+
+&lt;p&gt;DocWrangler then analyzes your row-level feedback to suggest targeted prompt improvements, showing clear diffs. You can iterate on these suggestions or branch into different directions, with full version control to track your exploration. This tight feedback loop between inspection and refinement reduces the cognitive load of improving your pipeline.&lt;/p&gt;
+
+&lt;p&gt;We’ve been excited to see how quickly users have adopted this feedback loop, even without formal training. The ability to move fluidly between output inspection, feedback, and prompt refinement seems to match how people naturally think about improving their pipelines.&lt;/p&gt;
+
+&lt;h4 id=&quot;docwrangler-assistant&quot;&gt;DocWrangler Assistant&lt;/h4&gt;
+
+&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;&quot;&gt;
+  &lt;iframe width=&quot;100%&quot; height=&quot;400&quot; src=&quot;https://www.youtube.com/embed/oV8AAkykYB0?si=RDr2Clal04zpz89P&amp;amp;start=20&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+  &lt;figcaption style=&quot;text-align: center; width:100%; font-style: italic; margin: auto;&quot;&gt;Demo of DocWrangler&apos;s AI assistant capabilities&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;LLM-powered data processing involves several new concepts to master, from DocETL’s syntax to effective prompt design patterns. To help users get started, DocWrangler includes a context-aware AI assistant that understands your pipeline and can explain concepts as you need them. The assistant can be used in many ways: e.g., it helps with technical concepts like Jinja templates by explaining them using examples from your own prompts, or it can suggest structural improvements based on common pipeline patterns. While experienced users may not need this help, we’ve found it reduces the time it takes to become productive with LLM pipelines.&lt;sup id=&quot;fnref:3&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt; Of course, we should note that this is still an LLM-powered chatbot. It may occasionally hallucinate, for instance. So, think of it as a helpful “companion” in your data processing journey, not an oracle.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Note: If you use our AI features, we log chatbot and prompt engineering queries for our research purposes. We do not plan on open-sourcing the data, but in the case that we do so (later down the line), this data will not be open-sourced without careful anonymization and PII removal, following standard research practices. If you do not want us to log usage data, you can provide your OpenAI API key.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;tips-for-llm-powered-data-processing&quot;&gt;Tips for LLM-Powered Data Processing&lt;/h2&gt;
+
+&lt;p&gt;Excited to get started with your own dataset and task? Based on what we’ve observed from users on DocWrangler, here are a few “good practices”:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;1. Start with Data Inspection&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Upload your data and carefully inspect it in the viewer&lt;/li&gt;
+  &lt;li&gt;Set your API keys, dataset description, and a manageable sample size (10-20 documents)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;2. Start with Open-Ended Data Exploration&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Begin with broad, exploratory operations to understand your data–map operations are very useful tools for data exploration&lt;/li&gt;
+  &lt;li&gt;Write prompts that encourage exhaustive responses, like “extract information that &lt;em&gt;might&lt;/em&gt; be relevant to X and summarize key points.” Essentially, let the LLM include potentially relevant information to help build a mental model of your dataset.&lt;/li&gt;
+  &lt;li&gt;Keep output schemas simple initially–you can add structure later&lt;/li&gt;
+  &lt;li&gt;Remember: prompts are Jinja templates (check &lt;a href=&quot;https://ucbepic.github.io/docetl/&quot;&gt;DocETL docs&lt;/a&gt; or ask the AI assistant for syntax help)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;3. Iterate One Step at a Time&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Build your pipeline operation by operation&lt;/li&gt;
+  &lt;li&gt;Examine outputs one example at a time&lt;/li&gt;
+  &lt;li&gt;Keep providing notes until you stop learning new things about your data/LLM behavior&lt;/li&gt;
+  &lt;li&gt;Take advantage of the prompt improvement assistant&lt;/li&gt;
+  &lt;li&gt;Gradually add more structure to your schemas as your understanding improves&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;4. Handle Complexity&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;For very long documents or complex tasks, try the experimental optimize operation functionality, accessible through the operation menu dropdown. This will perform data or task decomposition (or both).&lt;/li&gt;
+  &lt;li&gt;For resolve operations, always run optimization to make the operation cheaper and faster. Note that the optimizer requires OpenAI API keys.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;whats-next-for-docwrangler&quot;&gt;What’s Next for DocWrangler&lt;/h2&gt;
+
+&lt;p&gt;While this current version of DocWrangler is already very powerful, there are several more exciting ideas we are thinking about:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Richer dynamic visualizations specific to each operator type, and the semantic meaning of the operation&lt;/li&gt;
+  &lt;li&gt;Enhanced validation support, including:
+    &lt;ul&gt;
+      &lt;li&gt;Direct editing of individual outputs&lt;/li&gt;
+      &lt;li&gt;Persistence of these direct edits across runs, even when there are prompt changes&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;More interactive optimization capabilities&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If you’re interested in contributing to any of the above, or another DocWrangler project, please reach out to &lt;a href=&quot;mailto:shreyashankar@berkeley.edu&quot;&gt;shreyashankar@berkeley.edu&lt;/a&gt;. You do not have to be a Berkeley student to join the group, but please mention it in your email if you are!&lt;/p&gt;
+
+&lt;p&gt;DocWrangler is part of our broader mission to make LLM-powered data processing more accessible and effective. Our upcoming DocWrangler research paper will share our design principles, implementation details, and insights from our user studies–stay tuned! In the meantime, you can: try DocWrangler at &lt;a href=&quot;docetl.org/playground&quot;&gt;docetl.org/playground&lt;/a&gt;, star our &lt;a href=&quot;https://github.com/ucbepic/docetl&quot;&gt;GitHub repository&lt;/a&gt; to follow development, and join our &lt;a href=&quot;https://discord.com/invite/fHp7B2X3xx&quot;&gt;Discord community&lt;/a&gt; for technical discussions and support.&lt;/p&gt;
+
+&lt;p&gt;We’re excited to see how you’ll use DocWrangler in your own workflows and look forward to your feedback as we continue improving the IDE. Your experiences and suggestions will help shape the future of LLM-powered data processing tools!&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;Acknowledgments:&lt;/strong&gt; We’re grateful to Stephen Lee and &lt;a href=&quot;https://www.linkedin.com/in/mawilh&quot;&gt;Mawil Hasan&lt;/a&gt; for their collaboration and invaluable help with user studies, and to &lt;a href=&quot;https://jamesdsmith.net/&quot;&gt;James Smith&lt;/a&gt; and &lt;a href=&quot;https://people.eecs.berkeley.edu/~bjoern/&quot;&gt;Björn Hartmann&lt;/a&gt; for their insightful feedback throughout this project. This public research preview of DocWrangler is made possible by generous credits from &lt;a href=&quot;https://modal.com/&quot;&gt;Modal Labs&lt;/a&gt; and &lt;a href=&quot;https://www.microsoft.com/en-us/research/&quot;&gt;Microsoft&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;This iterative refinement is necessary because of a fundamental design challenge in complex workflows—what &lt;a href=&quot;https://arxiv.org/abs/2309.14459&quot;&gt;Subramonyam et al.&lt;/a&gt; call bridging the “gulf of envisioning” between your goals and effective LLM interactions. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;LLM-powered data processing is a rapidly growing field, with many research teams and startups developing systems. Some, like DocETL, focus on executing open-ended dataflow operations (e.g., map, reduce), such as &lt;a href=&quot;https://vldb.org/cidrdb/papers/2025/p12-liu.pdf&quot;&gt;Palimpzest&lt;/a&gt; from MIT, &lt;a href=&quot;https://arxiv.org/abs/2407.11418&quot;&gt;LOTUS&lt;/a&gt; from Stanford, and &lt;a href=&quot;https://arxiv.org/abs/2409.00847&quot;&gt;Sycamore&lt;/a&gt; from Aryn. Others target specific tasks, such as Lloom for topic analysis and DiscipLink for aggregating and linking research papers based on user queries. &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Making this work required solving some interesting technical challenges, particularly around managing context windows (since datasets, pipelines, and sample outputs can easily exceed LLM token limits)—perhaps we’ll write another post about those solutions later, but feel free to ask about them on &lt;a href=&quot;https://discord.gg/fHp7B2X3xx&quot;&gt;Discord&lt;/a&gt; if you’re curious! &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Mon, 13 Jan 2025 00:00:00 -0800</pubDate>
+        <link>http://localhost:4000/blogs/2025/01/13/docwrangler/</link>
+        <guid isPermaLink="true">http://localhost:4000/blogs/2025/01/13/docwrangler/</guid>
+      </item>
+    
+      <item>
+        <title>Reimagining LLM-Powered Unstructured Data Analysis with DocETL</title>
+        <description>&lt;h2 id=&quot;tldr&quot;&gt;&lt;em&gt;TL;DR&lt;/em&gt;&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;DocETL is an open source system to easily build LLM-powered data processing pipelines. It offers declarative operators that are amenable to powerful optimization, improving accuracy in large-scale, complex document analysis tasks.&lt;/em&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;em&gt;See our demo:&lt;a href=&quot;https://www.docetl.com/&quot;&gt; https://www.docetl.com/&lt;/a&gt;&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;GitHub repo:&lt;a href=&quot;https://github.com/ucbepic/docetl&quot;&gt; https://github.com/ucbepic/docetl&lt;/a&gt;&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Discord community:&lt;a href=&quot;https://discord.com/invite/fHp7B2X3xx&quot;&gt; https://discord.com/invite/fHp7B2X3xx&lt;/a&gt;&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Documentation:&lt;a href=&quot;https://ucbepic.github.io/docetl/&quot;&gt; https://ucbepic.github.io/docetl/&lt;/a&gt;&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Many researchers and analysts face challenges when processing complex, unstructured documents at scale using Large Language Models (LLMs). The complexity stems from two main factors: first, the logic and iteration required to process collections of texts or documents is intricate and often domain-specific. Second, optimizing these processes for accuracy and efficiency typically requires manual, time-consuming effort.&lt;/p&gt;
+
+&lt;p&gt;As part of the &lt;a href=&quot;https://bids.berkeley.edu/california-police-records-access-project&quot;&gt;Police Records Access Project&lt;/a&gt;, our journalism collaborators’ need to analyze heterogeneous police records for officer misconduct patterns (e.g., excessive use-of-force) exemplifies these challenges. Data processing frameworks need to be low-level enough to be easily programmable and adaptable to specific use-cases, yet declarative enough to enable automatic optimization—similar to the benefits database systems provide. This led us to develop DocETL, a system that allows users to express complex document processing pipelines at a higher level of abstraction. DocETL frees analysts from managing complex, low-level details (e.g., manual document chunking, output validation, error recovery), allowing focus on analytical goals.&lt;/p&gt;
+
+&lt;p&gt;We illustrate DocETL’s capabilities using a similar (albeit smaller-scale) challenge: analyzing themes in US presidential debates dating back to 1960. This example demonstrates how DocETL can be applied to a range of document analysis tasks, from investigative journalism to historical research, providing a powerful tool for anyone working with large collections of unstructured text data.&lt;/p&gt;
+
+&lt;h2 id=&quot;challenges-of-complex-document-processing&quot;&gt;Challenges of Complex Document Processing&lt;/h2&gt;
+
+&lt;p&gt;To introduce the challenges of processing textual documents, let us identify the salient topics from historical presidential debate transcripts and provide representative extracts for each topic. Trying to use LLMs for this task immediately encounters the following challenges:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Scale: The combined debate transcripts span 738,094 words, far exceeding the context limits of most LLMs.&lt;/li&gt;
+  &lt;li&gt;Complexity: The task requires multi-step reasoning—identifying themes, tracking their evolution over time, and summarizing viewpoints across multiple debates.&lt;/li&gt;
+  &lt;li&gt;Accuracy: While LLMs like Gemini-1.5-Pro-002 (released September 24, 2024) can support prompts of 2 million tokens, simply feeding the entire dataset into an LLM in a single prompt leads to incomplete results. For example, when given the entire dataset at once, Gemini-1.5-Pro-002 extracts some themes from several debates, but &lt;a href=&quot;https://www.docetl.com/#demo-gemini-output&quot;&gt;only reports on the evolution of five themes&lt;/a&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;To create a correct and reliable pipeline, there are many potential ways to approach this task, each with its own trade-offs. A single LLM call on the entire dataset is prone to incompleteness. We could ask an LLM to process groups of individual transcripts, but this risks losing global context, and it’s unclear how many transcripts can be processed at once. The challenge lies not just in crafting a pipeline, but in the time-consuming process of optimizing it for accuracy. You might spend days meticulously tuning a pipeline—breaking down your data and task into a carefully-orchestrated swarm of LLM calls—only to find the results disappointing when run on the full dataset. Worse, the rigid structure you’ve built often resists the major refactoring needed to address newly discovered issues.&lt;/p&gt;
+
+&lt;p&gt;What’s needed is a more flexible, iterative approach. &lt;strong&gt;We need a system that can automatically explore and evaluate different pipeline configurations, decomposing complex operations into sequences of simpler, more accurate ones.&lt;/strong&gt; This system should focus on tuning optimization decisions, allowing for rapid iteration on high-level goals and analytical objectives without requiring a complete pipeline rebuild..&lt;/p&gt;
+
+&lt;h2 id=&quot;introducing-docetl&quot;&gt;Introducing DocETL&lt;/h2&gt;
+
+&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;&quot;&gt;
+  &lt;img src=&quot;/images/docetl/userflow.png&quot; style=&quot;width:100%&quot; /&gt;
+ &lt;figcaption style=&quot;text-align: center; width:60%; font-style: italic; margin: auto;&quot;&gt;DocETL user flow. Users define a pipeline of operators and prompts to run on their documents, and DocETL optimizes it for accuracy.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;DocETL is our declarative system for LLM-powered data processing pipelines. DocETL introduces a &lt;a href=&quot;https://ucbepic.github.io/docetl/concepts/operators/&quot;&gt;rich set of document processing operators&lt;/a&gt; that are specifically designed for complex text analysis tasks, including splitting large documents, context-aware processing, entity resolution, and iterative refinement of outputs. Users can define pipelines of these operators and their corresponding LLM prompts and &lt;a href=&quot;https://ucbepic.github.io/docetl/concepts/operators/#validation&quot;&gt;validations&lt;/a&gt; in YAML (low-code) or Python, and DocETL will optimize them automatically.&lt;/p&gt;
+
+&lt;p&gt;Analyzing documents requires reasoning about the goals and document contents, and traditional rule-based optimizations do not work here. Thus, we pioneer an &lt;em&gt;agent-based&lt;/em&gt; paradigm for optimizing complex document processing. Here’s how it works:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;User-Defined Pipelines&lt;/strong&gt;: Users write a pipeline of semantic operations using DocETL’s YAML-based DSL.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Automated Pipeline Rewriting&lt;/strong&gt;: DocETL employs LLMs to enhance pipeline accuracy through two mechanisms: &lt;em&gt;query rewriting&lt;/em&gt; and &lt;em&gt;quality assessment&lt;/em&gt;. Agents implement our predefined rules for semantic task decomposition–that is, they decompose complex operations into simpler, less error-prone ones–resulting in a number of candidate pipelines. Agents also generate task-specific validation criteria and evaluate sample outputs (a la “LLM-as-a-judge”) to compare candidate pipeline configurations.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Transparent Results&lt;/strong&gt;: Once the optimization process is complete, DocETL presents the user with the rewritten, optimized pipeline. Users can inspect how the system transformed their initial plan into a more effective one, and then run the optimized pipeline.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;example-us-presidential-debate-analysis-pipeline&quot;&gt;Example: US Presidential Debate Analysis Pipeline&lt;/h3&gt;
+
+&lt;p&gt;Let’s examine how DocETL tackles the presidential debate analysis task:&lt;/p&gt;
+
+&lt;h4 id=&quot;user-defined-pipeline&quot;&gt;User-Defined Pipeline&lt;/h4&gt;
+
+&lt;p&gt;Initially, the user defines a simple map-reduce pipeline in YAML:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Map: Extract a list of themes and associated viewpoints from &lt;em&gt;each&lt;/em&gt; debate transcript.&lt;/li&gt;
+  &lt;li&gt;Unnest: Flatten the theme structure for easier processing.&lt;/li&gt;
+  &lt;li&gt;Reduce: Summarize viewpoints per theme across all transcripts.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;However, this pipeline faces challenges. First, the map operation identifies 339 distinct themes, many of which are similar (e.g., “social security and medicare” and “medicare and social security”). Second, the reduce operation struggles to consolidate viewpoints for these similar themes effectively; there may be many viewpoints in the input that are not reflected in the output.&lt;/p&gt;
+
+&lt;h4 id=&quot;docetl-optimization&quot;&gt;DocETL Optimization&lt;/h4&gt;
+
+&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;&quot;&gt;
+  &lt;img src=&quot;/images/docetl/debatepipeline.png&quot; style=&quot;width:100%&quot; /&gt;
+ &lt;figcaption style=&quot;text-align: center; width:50%; font-style: italic; margin: auto;&quot;&gt;DocETL-optimized pipeline.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;When the user runs &lt;em&gt;docetl build pipeline.yaml&lt;/em&gt;, DocETL’s optimizer rewrites the pipeline for improved accuracy. The changes include:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;em&gt;Theme Canonicalization:&lt;/em&gt; A new “resolve” operation is added to canonicalize similar themes, reducing the number of themes by 55%.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Iterative Refinement:&lt;/em&gt; The “reduce” operation is rewritten into a loop of map + reduce operations, allowing for iterative refinement of summaries based on validation (i.e., LLM-as-a-judge) feedback.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The initial optimization process explored various configurations before settling on this efficient pipeline, which costs $0.86 to optimize and $0.29 to run on all debate transcripts. Overall, DocETL’s pipeline &lt;a href=&quot;https://www.docetl.com/#demo-docetl-output&quot;&gt;generates 152 reports averaging 730 words each&lt;/a&gt;, summarizing the evolution of viewpoints for each theme—a significant improvement over the 5-report baseline from Gemini 1.5 Pro 002!&lt;/p&gt;
+
+&lt;p&gt;A big advantage of DocETL’s approach is its efficiency in handling human-driven iterations, thanks to caching. For example, if a user wants to tune the summarizer prompt after seeing initial results, DocETL only reruns the necessary parts of the pipeline. A full pipeline iteration might cost $0.29, but a single-operation update may cost only a few cents.&lt;/p&gt;
+
+&lt;h2 id=&quot;operators-and-rewrite-rules&quot;&gt;Operators and Rewrite Rules&lt;/h2&gt;
+
+&lt;p&gt;As we saw earlier, the user can specify their pipeline some operators, and we rewrote it using additional ones. Turns out DocETL provides a comprehensive set of operators for complex document processing tasks. While the full list is available at&lt;a href=&quot;https://ucbepic.github.io/docetl/&quot;&gt; https://ucbepic.github.io/docetl/&lt;/a&gt;, two new operators are specifically designed for long document processing:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Split&lt;/strong&gt;: Divides long documents into manageable chunks, critical for texts exceeding LLM token limits or when LLM performance degrades with increasing input size.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Gather&lt;/strong&gt;: Augments each chunk with relevant context from other parts of the document, e.g., any metadata or prior content, so the LLM can accurately process the chunk at hand.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;To optimize document processing pipelines for accuracy, DocETL employs 13 LLM-specific rewrite rules spanning three categories:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;em&gt;Data Decomposition:&lt;/em&gt; These rules focus on breaking down large documents or complex data structures into more manageable pieces.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Projection Synthesis:&lt;/em&gt; These rules introduce intermediate steps to refine or preprocess data without necessarily resorting to chunking.&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;LLM-Centric Improvements:&lt;/em&gt; These rules leverage unique properties of LLMs to enhance output quality. For example, LLMs are nondeterministic and inconsistent, necessitating entity resolution operations. Or, LLMs benefit from self-correction and iterative improvement, given feedback.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;These rules enable DocETL to explore various pipeline configurations, decomposing complex operations into sequences of simpler, more accurate ones. For example, a single complex map operation might be rewritten into a series of operations: splitting the document, gathering context for each chunk, applying a modified map to each context-augmented chunk, and then reducing the results. This approach addresses challenges such as processing large documents that exceed LLM context limits, maintaining coherence across document sections, and leveraging LLMs’ ability to refine their own outputs. Full descriptions of these rewrite rules and their applications will be available in our upcoming paper–stay tuned!&lt;/p&gt;
+
+&lt;h2 id=&quot;towards-a-robust-no-code-interactive-and-accuracy-optimized-system&quot;&gt;Towards a Robust No-Code, Interactive, and Accuracy-Optimized System&lt;/h2&gt;
+
+&lt;p&gt;Our vision is to develop a fully no-code and interactive system for accurate, intelligent unstructured data processing. This presents exciting research challenges:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;How can we translate natural language task descriptions into optimized LLM pipelines?&lt;/strong&gt; This involves not only understanding the user’s intent but also automatically identifying the most effective &lt;em&gt;starting&lt;/em&gt; sequence of operations to achieve the desired outcome.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;What’s the best way to incorporate user feedback for iterative refinement of pipelines?&lt;/strong&gt; Users often don’t know what makes for good “acceptance criteria” until they see the initial LLM output. We need to design intuitive interfaces that allow users to provide feedback on intermediate results and DocETL-synthesized validator prompts, and guide the optimization process.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;How do we make the optimization process fast, transparent and debuggable?&lt;/strong&gt; End-to-end optimization times for super-complex pipelines (e.g., the &lt;a href=&quot;https://bids.berkeley.edu/california-police-records-access-project&quot;&gt;police misconduct identification&lt;/a&gt; pipeline) can take over 30 minutes. Ideally, we can provide users with insights into why certain decisions were made (e.g., how we rewrote an operation) and how to troubleshoot issues when they arise, interactively.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;How can we improve the reliability of our LLM agents in generating high-quality rewrites?&lt;/strong&gt; This involves developing techniques to reduce output variability and improve the reliability of generated pipeline optimizations without extensive resampling.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;DocETL is an open-source project aimed at advancing LLM-powered unstructured data analysis. To explore its capabilities, visit&lt;a href=&quot;https://www.docetl.com/&quot;&gt; https://www.docetl.com/&lt;/a&gt; and try our presidential debate analysis demo. If you’re interested in contributing to the project or staying updated on its development, please star our &lt;a href=&quot;https://github.com/ucbepic/docetl&quot;&gt;GitHub repository&lt;/a&gt;. For any technical help or discussions on unstructured data processing challenges and LLM output quality at scale, join our &lt;a href=&quot;https://discord.com/invite/fHp7B2X3xx&quot;&gt;Discord&lt;/a&gt; community. We look forward to your feedback to help shape the future of AI-assisted document analysis tools!&lt;/p&gt;
+</description>
+        <pubDate>Tue, 24 Sep 2024 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/blogs/2024/09/24/docetl/</link>
+        <guid isPermaLink="true">http://localhost:4000/blogs/2024/09/24/docetl/</guid>
+      </item>
+    
+      <item>
+        <title>Lightweight Nudges for More Accurate Retrieval in RAG Pipelines</title>
+        <description>&lt;p&gt;Retrieval based on pre-trained embedding similarity is the standard approach for developing RAG pipelines that incorporate external data sources, including documents, images, tables, and text. And yet, out of the box, these models perform very poorly, retrieving data records that are often completely unrelated to the queries.&lt;/p&gt;
+
+&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;&quot;&gt;
+  &lt;img src=&quot;https://data-people-group.github.io/images/nudge/nudge-icon.jpg&quot; style=&quot;width:30%&quot; /&gt;
+ &lt;figcaption style=&quot;text-align: center; width:50%; font-style: italic; margin: auto;&quot;&gt;NUDGE your embeddings to where they should be.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;We’ve developed NUDGE, a simple and lightweight fine-tuning method that boosts accuracy when retrieving text/images using semantic similarity with pre-trained embedding models. In a nutshell, NUDGE directly modifies the embeddings of data records to maximize the similarity between training queries and their ground-truth answers. NUDGE does so &lt;em&gt;non-parametrically.&lt;/em&gt; Non-parametric means that NUDGE does not modify model parameters to generate better embeddings, as fine-tuning the embedding model, or training adaptors (e.g., &lt;a href=&quot;https://docs.llamaindex.ai/en/stable/examples/finetuning/embeddings/finetune_embedding_adapter/&quot;&gt;link&lt;/a&gt; or &lt;a href=&quot;https://research.trychroma.com/embedding-adapters&quot;&gt;link&lt;/a&gt;) would.  Instead, NUDGE &lt;em&gt;directly&lt;/em&gt; changes the embeddings themselves. Compared with fine-tuning the pre-trained model and training adaptors, &lt;strong&gt;NUDGE provides 3.3x and 4.3x higher increase in accuracy and runs 200x and 3x faster&lt;/strong&gt;, respectively.&lt;/p&gt;
+
+&lt;p&gt;Given these impressive results, &lt;em&gt;we think using NUDGE is a no-brainer&lt;/em&gt; – we encourage you to try it out and let us know what you think! You can read more about the technical details underlying NUDGE &lt;a href=&quot;https://arxiv.org/abs/2409.02343&quot;&gt;here&lt;/a&gt;, or try it out yourself &lt;a href=&quot;https://github.com/szeighami/nudge/&quot;&gt;here&lt;/a&gt;.  We provide more high-level intuition as well as experimental results below.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;The Problem: k-NN Retrieval&lt;/strong&gt;&lt;br /&gt;
+We have a dataset with a number of data records, each of which can be a text chunk, or an image. &lt;em&gt;k&lt;/em&gt;-NN retrieval first embeds each data record as a &lt;em&gt;d&lt;/em&gt;-dimensional vector. Embedding is done using a pre-trained embedding model, e.g., OpenAI’s text embedding model for text, or CLIP for images. To answer a query, &lt;em&gt;k&lt;/em&gt;-NN retrieval similarly embeds the query and returns the top-&lt;em&gt;k&lt;/em&gt; data records whose embeddings have the highest similarity to the query embedding, where typically cosine similarity is used as the similarity metric. For the purpose of fine-tuning, we additionally are given a training query set, where for each query we know its ground-truth answer(s).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;The NUDGE Approach&lt;/strong&gt;&lt;br /&gt;
+NUDGE changes the data embeddings based on the training set &lt;em&gt;non-parametrically&lt;/em&gt; to create fine-tuned data embeddings. That is, it does not modify the model parameters, as fine-tuning the pre-trained model or training adaptors would. Instead, it modifies the data record embeddings themselves to maximize the similarity between queries and their ground-truth answers.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Why is a non-parametric approach helpful?&lt;/em&gt; A non-parametric fine-tuning approach is extremely lightweight by design. It only requires updating the data embeddings based on mathematically derived formulas, as opposed to, for example, fine-tuning the embedding model, which requires training resources equivalent to training the embeddings in the first place. Meanwhile, our experiments show that NUDGE’s simple update rules are more effective and efficient than fine-tuning the pre-trained model or training adaptors.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;How does this work?&lt;/em&gt; NUDGE derives its update rules by solving constrained optimization problems. The objective is to change data embeddings to maximize the similarity between queries and their ground-truth answers. However, changing the data embeddings &lt;em&gt;too much&lt;/em&gt; can lead to overfitting the training queries and losing the semantics captured in the data embeddings. To avoid that, NUDGE adds constraints on how the data embeddings can change. The figure below shows this process.&lt;/p&gt;
+
+&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;&quot;&gt;
+  &lt;img src=&quot;https://data-people-group.github.io/images/nudge/nudge_overview.jpg&quot; style=&quot;width:50%&quot; /&gt;
+  &lt;figcaption style=&quot;text-align: left; width:55%; font-style: italic; margin: auto;&quot;&gt;Figure 1. NUDGE changes data embeddings within a constrained region (shown in dashed lines) to maximize similarity with training queries. Data embeddings are colored based on queries for which they are the ground-truth answers.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;As the figure shows, data embeddings are moved toward the training queries for which they are the ground-truth answers to maximize the similarity between the two. Meanwhile, how the embeddings can change is constrained to avoid overfitting. An example of the constraints used is also shown in the figure. The constraint (1) forces the new embeddings to be normalized (i.e., the new embeddings fall on the unit ball), and (2) bounds the magnitude of change to the embeddings.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Variants of the approach.&lt;/em&gt; In the paper, we present two methods NUDGE-N and NUDGE-M. NUDGE-N optimally solves the constraint optimization problem described above. NUDGE-M solves a variant that only considers constraint (2) above, allowing the new embeddings not to be normalized. We present closed-form solutions for both, leading to simple formulas for fine-tuning the embeddings.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Experimental Evaluation&lt;/strong&gt;&lt;br /&gt;
+We performed experiments on various embedding models and datasets, for both text and image retrieval.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Embedding Models&lt;/strong&gt;. For text, we use BGE-small (&lt;a href=&quot;https://huggingface.co/BAAI/bge-small-en-v1.5&quot;&gt;link&lt;/a&gt;), GTE-large (&lt;a href=&quot;https://huggingface.co/Alibaba-NLP/gte-large-en-v1.5&quot;&gt;link&lt;/a&gt;), and OpenAI’s text-embedding-large-3 (&lt;a href=&quot;https://platform.openai.com/docs/guides/embeddings/embedding-models&quot;&gt;link&lt;/a&gt;), respectively referred to as BGE-S, GTE-L and TE3-L. For image retrieval, we use two CLIP variants (&lt;a href=&quot;https://arxiv.org/abs/2103.00020&quot;&gt;link&lt;/a&gt;), ViT-B/32 and ViT-L/14, respectively referred to as CLIP-B and CLIP-L.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Datasets&lt;/strong&gt;. We present results on standard text retrieval datasets (SciFacts, Fever, ArguAna,TriviaQA, HotpotQA, Natural Questions and NF-Corpus, datasets available &lt;a href=&quot;https://huggingface.co/sepz&quot;&gt;here&lt;/a&gt;) and image retrieval datasets (&lt;a href=&quot;http://cocodataset.org&quot;&gt;COCO&lt;/a&gt; and &lt;a href=&quot;https://huggingface.co/datasets/nlphuji/flickr30k&quot;&gt;Flickr&lt;/a&gt;). See the paper for dataset details.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Baselines&lt;/strong&gt;. We compare results with training an adaptor model to transform the output of the pre-trained model, referred to as Adaptor, and fine-tuning the pre-trained model itself, referred to as PTFT.&lt;/p&gt;
+
+&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;&quot;&gt;
+  &lt;img src=&quot;https://data-people-group.github.io/images/nudge/res_text.png&quot; style=&quot;width:100%&quot; /&gt;
+  &lt;figcaption style=&quot;text-align: left; width:100%; font-style: italic; margin: auto;&quot;&gt;Table 1. Average accuracy across text datasets (R@k is Recall@k) . PTFT cannot be run on TE3-L since the model is closed-source and OpenAI does not provide an embedding fine-tuning API. It also cannot be run on GTE-L within a reasonable time frame with a single GPU.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;&quot;&gt;
+  &lt;img src=&quot;https://data-people-group.github.io/images/nudge/res_img.png&quot; style=&quot;width:70%&quot; /&gt;
+  &lt;figcaption style=&quot;text-align: center; width:73%; font-style: italic; margin: auto;&quot;&gt;Table 2. Average accuracy across image datasets (R@k is Recall@k).&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;Results.&lt;/strong&gt; NUDGE variants consistently outperform other fine-tuning methods (see Tables 1-2). NUDGE-N provides, on average across datasets and for all embedding models, around 10-14% increase in NDCG@10. PTFT and Adaptor, on the other hand, only improve accuracy by at most 4%.&lt;/p&gt;
+
+&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;&quot;&gt;
+  &lt;img src=&quot;https://data-people-group.github.io/images/nudge/res_runtime.png&quot; style=&quot;width:40%&quot; /&gt;
+  &lt;figcaption style=&quot;text-align: left; width:45%; font-style: italic; margin: auto;&quot;&gt;Table 3. Run time of different methods on BGE-S using an NVIDIA A100 or a 32-core CPU, excluding time to embed the documents.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;Perhaps surprisingly, NUDGE provides this substantial accuracy boost &lt;em&gt;while running only in a few minutes even on a CPU&lt;/em&gt;. On CPU, NUDGE is more than 7x faster than Adaptor, while PTFT cannot be run on a CPU. On GPU, it is, respectively, 3x and 200x faster.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Summary&lt;/strong&gt;&lt;br /&gt;
+We presented NUDGE—a simple lightweight fine-tuning method that fine-tunes embeddings in minutes on a CPU, and consistently provides 10-15% accuracy boosts. To fine-tune embeddings, NUDGE directly modifies embeddings to narrow the gap between queries and data, instead of changing the embedding models. It does so by solving constrained optimization problems and deriving mathematical formulae to update embeddings. This leads to simple, efficient, and extremely effective update rules to fine-tune embeddings. NUDGE your embeddings for optimized retrieval &lt;a href=&quot;https://github.com/szeighami/nudge/&quot;&gt;here&lt;/a&gt;, and read more &lt;a href=&quot;https://arxiv.org/abs/2409.02343&quot;&gt;here&lt;/a&gt;. We’d love to hear any feedback!&lt;/p&gt;
+</description>
+        <pubDate>Thu, 05 Sep 2024 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/blogs/2024/09/05/nudge/</link>
+        <guid isPermaLink="true">http://localhost:4000/blogs/2024/09/05/nudge/</guid>
+      </item>
+    
+      <item>
+        <title>Introducing Data People</title>
+        <description>&lt;p&gt;Hello! Welcome to the Data People Research blog!&lt;/p&gt;
+
+&lt;p&gt;We’re a group of multi-disciplinary 
+researchers at UC Berkeley who are exploring the frontiers of 
+what data infrastructure should look like in the next decade, 
+by making it more intelligent, intuitive, efficient, and scalable.&lt;/p&gt;
+
+&lt;p&gt;We believe Large Language Models (LLMs) will play a key role in how people work
+with and leverage data at hand, but we also know that LLMs 
+will only take you so far, and fundamental principles from human-computer interaction
+and data management will be essential in closing the gap.&lt;/p&gt;
+
+&lt;p&gt;Fundamentally, our emphasis is on making &lt;em&gt;people&lt;/em&gt; more effective with &lt;em&gt;data&lt;/em&gt;. So, we’re &lt;em&gt;data people&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;We’re affiliated with 
+the &lt;a href=&quot;https://dsf.berkeley.edu/&quot;&gt;Data Systems and Foundations Group&lt;/a&gt;, 
+&lt;a href=&quot;https://hci.berkeley.edu/&quot;&gt;Human Computer Interaction Group&lt;/a&gt;, 
+as well as with the 
+&lt;a href=&quot;https://epic.berkeley.edu/&quot;&gt;Effective Programming, Interaction, and Computation with Data (EPIC) Lab&lt;/a&gt;, 
+all at the University of California, Berkeley.&lt;/p&gt;
+
+&lt;p&gt;For any feedback, please feel free to reach out!&lt;/p&gt;
+</description>
+        <pubDate>Thu, 05 Sep 2024 00:00:00 -0700</pubDate>
+        <link>http://localhost:4000/blogs/2024/09/05/intro/</link>
+        <guid isPermaLink="true">http://localhost:4000/blogs/2024/09/05/intro/</guid>
+      </item>
+    
+  </channel>
+</rss>

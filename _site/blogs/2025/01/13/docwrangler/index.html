@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Interactive LLM-Powered Data Processing with DocWrangler &#8211; The Data People Research Blog</title>
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//maxcdn.bootstrapcdn.com">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="DocWrangler is an IDE that provides instant feedback, visual exploration tools, and AI assistance for building and iterating on LLM-powered data processing pipelines">
+    <link rel="manifest" type="application/manifest+json; charset=utf-8" href="/manifest.json" />
+    <meta name="robots" content="all">
+    <meta name="author" content="">
+    
+    <meta name="keywords" content="blogs">
+    <link rel="canonical" href="http://localhost:4000/blogs/2025/01/13/docwrangler/">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for The Data People Research Blog" href="/feed.xml" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css?202501112111" type="text/css">
+
+    <!-- Fonts -->
+    
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    
+
+    <!-- MathJax -->
+    
+    <script type="text/javascript" async
+        src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    
+
+    <!-- Verifications -->
+    
+    
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Interactive LLM-Powered Data Processing with DocWrangler">
+    <meta property="og:description" content="A research blog on next-generation data infrastructure that is usable, intelligent, and efficient">
+    <meta property="og:url" content="http://localhost:4000/blogs/2025/01/13/docwrangler/">
+    <meta property="og:site_name" content="The Data People Research Blog">
+    
+    <meta property="og:image" content="http://localhost:4000/images/me.jpeg">
+    
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    
+    <meta name="twitter:title" content="Interactive LLM-Powered Data Processing with DocWrangler" />
+    <meta name="twitter:description" content="DocWrangler is an IDE that provides instant feedback, visual exploration tools, and AI assistance for building and iterating on LLM-powered data processing pipelines" />
+    <meta name="twitter:url" content="http://localhost:4000/blogs/2025/01/13/docwrangler/" />
+    
+    <meta name="twitter:image" content="http://localhost:4000/images/me.jpeg" />
+    
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/favicon-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    
+</head>
+
+<body class="site">
+  
+	
+
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="/" class="site-title"><img width="150px" src="/images/datapeople.png" /></a>
+      <nav class="site-nav">
+        
+
+
+
+    
+        
+        
+        
+            <a class="nav-link" href="/about/">About Data People</a>
+        
+    
+
+    
+
+
+      </nav>
+      <div class="clearfix"></div>
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h1>Interactive LLM-Powered Data Processing with DocWrangler</h1>
+  
+    <span class="post-meta">By <a href="https://sh-reya.com/">Shreya Shankar</a>, <a href="https://bhavyac16.github.io/">Bhavya Chopra</a>, <a href="https://adityagp.net">Aditya G. Parameswaran</a>, and <a href="https://www.cs.columbia.edu/~ewu/">Eugene Wu</a></span><br>
+  
+  <span class="post-meta">Jan 13, 2025</span><br>
+  
+  <span class="post-meta small">
+  
+    12 minute read
+  
+  </span>
+</div>
+
+<article class="post-content">
+  <p><em>TLDR:</em></p>
+
+<ul>
+  <li><em>Try DocWrangler at <a href="http://docetl.org/playground">docetl.org/playground</a></em></li>
+  <li><em>Star our <a href="https://github.com/ucbepic/docetl">GitHub repository</a> to follow development</em></li>
+  <li><em>Join our <a href="https://discord.com/invite/fHp7B2X3xx">Discord community</a> for technical discussions and support</em></li>
+</ul>
+
+<hr />
+
+<p>LLM-powered data processing pipelines have a lot of promise, but building them is painful. <strong>Getting LLMs to do what you want involves constantly cycling between writing prompts, inspecting results, and refining both your prompts and your goals</strong> as you discover what’s actually possible.<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup> So, we built DocWrangler, an interactive development environment (IDE) that makes this process dramatically easier through instant feedback, visual exploration tools, and AI-powered assistance. <strong>DocWrangler is open-source, and a hosted version is available at <a href="http://docetl.org/playground">docetl.org/playground</a> (no sign-up required).</strong></p>
+
+<p>In this blog post, we’ll show you how DocWrangler improves the experience of working with LLM pipelines, whether you’re new to LLM-powered data processing or an experienced practitioner looking to streamline your workflow. We’ll discuss our motivations for building DocWrangler, demonstrate its features through practical examples, and share tips we’ve learned from successful users. Finally, we’ll conclude with what’s next.</p>
+
+<h2 id="why-we-built-docwrangler">Why We Built DocWrangler</h2>
+
+<p>LLM-powered data processing enables people to tackle complex tasks on unstructured data. Instead of writing code or training models to extract information from text and summarize this information across document boundaries, or hiring domain experts to make sense of the data, you can express what you want in natural language and let LLMs handle the heavy lifting. For example, imagine analyzing a collection of customer support call transcripts. You might build a pipeline like this:</p>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="/images/docwrangler/samplepipeline.png" style="width:100%" />
+ <figcaption style="text-align: center; width:100%; font-style: italic; margin: auto;">Example pipeline for analyzing customer support call transcripts, and challenges users face at each LLM-powered step.</figcaption>
+</figure>
+
+<p>Our system, <a href="https://arxiv.org/abs/2410.12189">DocETL</a>, provides a declarative way to build these pipelines, similar to how SQL lets you express database operations without worrying about execution details.<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup> Since our release in <a href="https://data-people-group.github.io/blogs/2024/09/24/docetl/">September 2024</a>, however, we’ve observed that many users struggle to write LLM-powered data processing pipelines effectively. In addition to the stage-specific challenges in the figure above, the challenges run deeper than just <em>“prompt engineering is hard.”</em> Users often start with one goal in mind, <a href="https://dl.acm.org/doi/10.1145/3654777.3676450">only to discover they actually want something different once they see initial results</a>. For example, when analyzing customer support conversations, you might think you want to extract specific issues mentioned. But after seeing the LLM’s outputs, you realize what you really want is to identify patterns in how support agents handle different types of complaints—something you couldn’t articulate until you saw the data processed in different ways.</p>
+
+<p>This kind of iterative refinement isn’t unique to LLMs. For example, early data cleaning systems like <a href="https://control.cs.berkeley.edu/pwheel-vldb.pdf">Potter’s Wheel</a> and <a href="https://dl.acm.org/doi/10.1145/1978942.1979444">Wrangler</a> (which evolved into <a href="https://www.alteryx.com/about-us/trifacta-is-now-alteryx-designer-cloud">Trifacta</a>) recognized that data transformation is inherently exploratory. Users need to see the effects of their changes immediately to understand if they’re moving in the right direction. LLM-powered data processing demands something more; an environment built around rapid iteration between examining data and refining pipelines, tools for exploring and validating LLM outputs at scale, and support for the natural evolution of analytical goals as you discover what’s possible with your data and the LLM (bridging the gulf of envisioning).</p>
+
+<p>Existing development interfaces don’t adequately support this workflow. Traditional IDEs and LLM pipeline builders focus on chaining simple prompts rather than supporting complex data processing operations, and none provide the rich, immediate feedback loop needed to work effectively with LLMs. This is the gap DocWrangler aims to fill.</p>
+
+<h2 id="what-is-docwrangler">What is DocWrangler?</h2>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="/images/docwrangler/docwrangler_screenshot.png" style="width:100%" />
+ <figcaption style="text-align: center; width:100%; font-style: italic; margin: auto;">Screenshot of the DocWrangler IDE, publicly available at <a href="http://docetl.org/playground">docetl.org/playground</a>.</figcaption>
+</figure>
+
+<p><strong>DocWrangler is an IDE designed for building and refining LLM-powered data processing pipelines</strong>. While the core ideas behind DocWrangler could support any LLM data processing framework, our current implementation is built on top of DocETL. As the primary developers of DocETL and having worked closely with its growing user base, it was natural for us to start there.</p>
+
+<p>The IDE adds an interactive layer that makes it easier to explore your data, experiment with different operations, and refine your pipelines based on what you discover. You can try it out at <a href="docetl.org/playground">docetl.org/playground</a>, where we’ve included two example datasets to help you get started (click on Help -&gt; Tutorials):</p>
+
+<ul>
+  <li><a href="https://www.supremecourt.gov/oral_arguments/oral_arguments.aspx">US Supreme Court oral arguments from 2024</a>–this will cost $0.11 to run with gpt-4o-mini</li>
+  <li><a href="https://www.kaggle.com/datasets/aimack/customer-service-chat-data-30k-rows">Airline customer support chat logs</a>–this will cost $0.05 to run with gpt-4o-mini</li>
+</ul>
+
+<p>These datasets showcase different types of analysis you might want to perform with LLM-powered pipelines.</p>
+
+<h3 id="key-features">Key Features</h3>
+
+<p>Building LLM pipelines today involves several challenges: assessing LLM outputs at scale to catch issues like hallucinations or inconsistencies, making targeted improvements without getting lost in prompt engineering trial-and-error, and mastering new concepts like pipeline patterns and templating syntax, and even getting comfortable with the exploratory nature of data analysis. DocWrangler’s features directly address these pain points through rich visualization tools, in-context feedback mechanisms, and intelligent assistance. Let’s look at each in detail:</p>
+
+<h4 id="spreadsheet-interface-with-automatic-summary-overlays">Spreadsheet Interface with Automatic Summary Overlays</h4>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <iframe width="100%" height="400" src="https://www.youtube.com/embed/MGydMpvLTZc" frameborder="0" allowfullscreen=""></iframe>
+  <figcaption style="text-align: center; width:100%; font-style: italic; margin: auto;">Demo of DocWrangler's spreadsheet interface with automatic summary overlays</figcaption>
+</figure>
+
+<p>DocWrangler combines a notebook-style pipeline editor with a spreadsheet-like output viewer. The editor lets you build your pipeline step by step, while the viewer provides functionality for exploring and validating outputs. In the output viewer, you can resize rows and columns, search within cells, and sort or filter columns–-capabilities that prove invaluable when working with LLM outputs. The search functionality is particularly useful for validating extractions and checking for hallucinations. For example, if you’ve asked the LLM to extract key phrases from documents, you can quickly search the source text to verify these phrases actually appear.</p>
+
+<p>DocWrangler’s output viewer also offers basic automatic visualization capabilities, inspired by Trifacta. Based on the data type of each output field, the system generates appropriate visualizations to help you spot patterns and potential issues; e.g., for text fields, it shows histograms of word or character counts; for lists, it displays distributions of the number of elements; for categorical data, it automatically detects and visualizes the distribution of categories. These visualizations are very useful for sanity checking your pipeline’s behavior at a glance. For instance, if you’re extracting entities from documents, a sudden spike in the length distribution might indicate the LLM is being too verbose or including irrelevant information. Often we see some outputs even have too few words because the LLM “refused” to do the task, and the visualizations help detect these quickly.</p>
+
+<h4 id="in-situ-fine-grained-feedback-and-intelligent-prompt-refinement">In-Situ Fine-Grained Feedback and Intelligent Prompt Refinement</h4>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <iframe width="100%" height="400" src="https://www.youtube.com/embed/ZacAO-gmFJE?si=1d0OqUsraB5FdEmq&amp;start=169" frameborder="0" allowfullscreen=""></iframe>
+  <figcaption style="text-align: center; width:100%; font-style: italic; margin: auto;">Demo of DocWrangler's in-situ feedback and prompt refinement capabilities</figcaption>
+</figure>
+
+<p>Traditional approaches to prompt engineering fall short for real-world data processing tasks. Many methods rely on labeled examples to optimize prompts, but users rarely have these on hand. So, some systems try to use powerful LLMs like GPT-4 as oracles to generate labeled examples, but this assumes tasks have clear right and wrong answers. In reality, data processing tasks are often flexible—take “extract common complaints from customer feedback.” Should the LLM identify specific issues like “password reset email never arrived” or higher-level categories like “account access problems”? Users often discover their preferred granularity only after seeing some outputs.</p>
+
+<p>Beyond these limitations, traditional prompt engineering forces users to mentally juggle between examining outputs, identifying issues, and figuring out how to fix them through prompt changes. DocWrangler takes a different approach, letting you provide feedback naturally as you inspect outputs. The interface shows one row at a time while maintaining context, with split views available to examine source documents or intermediate outputs side-by-side. You can attach observations directly to specific outputs—like “this summary missed key details” or “categorization is too granular here.”</p>
+
+<p>DocWrangler then analyzes your row-level feedback to suggest targeted prompt improvements, showing clear diffs. You can iterate on these suggestions or branch into different directions, with full version control to track your exploration. This tight feedback loop between inspection and refinement reduces the cognitive load of improving your pipeline.</p>
+
+<p>We’ve been excited to see how quickly users have adopted this feedback loop, even without formal training. The ability to move fluidly between output inspection, feedback, and prompt refinement seems to match how people naturally think about improving their pipelines.</p>
+
+<h4 id="docwrangler-assistant">DocWrangler Assistant</h4>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <iframe width="100%" height="400" src="https://www.youtube.com/embed/oV8AAkykYB0?si=RDr2Clal04zpz89P&amp;start=20" frameborder="0" allowfullscreen=""></iframe>
+  <figcaption style="text-align: center; width:100%; font-style: italic; margin: auto;">Demo of DocWrangler's AI assistant capabilities</figcaption>
+</figure>
+
+<p>LLM-powered data processing involves several new concepts to master, from DocETL’s syntax to effective prompt design patterns. To help users get started, DocWrangler includes a context-aware AI assistant that understands your pipeline and can explain concepts as you need them. The assistant can be used in many ways: e.g., it helps with technical concepts like Jinja templates by explaining them using examples from your own prompts, or it can suggest structural improvements based on common pipeline patterns. While experienced users may not need this help, we’ve found it reduces the time it takes to become productive with LLM pipelines.<sup id="fnref:3" role="doc-noteref"><a href="#fn:3" class="footnote" rel="footnote">3</a></sup> Of course, we should note that this is still an LLM-powered chatbot. It may occasionally hallucinate, for instance. So, think of it as a helpful “companion” in your data processing journey, not an oracle.</p>
+
+<p><em>Note: If you use our AI features, we log chatbot and prompt engineering queries for our research purposes. We do not plan on open-sourcing the data, but in the case that we do so (later down the line), this data will not be open-sourced without careful anonymization and PII removal, following standard research practices. If you do not want us to log usage data, you can provide your OpenAI API key.</em></p>
+
+<h2 id="tips-for-llm-powered-data-processing">Tips for LLM-Powered Data Processing</h2>
+
+<p>Excited to get started with your own dataset and task? Based on what we’ve observed from users on DocWrangler, here are a few “good practices”:</p>
+
+<p><strong>1. Start with Data Inspection</strong></p>
+
+<ul>
+  <li>Upload your data and carefully inspect it in the viewer</li>
+  <li>Set your API keys, dataset description, and a manageable sample size (10-20 documents)</li>
+</ul>
+
+<p><strong>2. Start with Open-Ended Data Exploration</strong></p>
+
+<ul>
+  <li>Begin with broad, exploratory operations to understand your data–map operations are very useful tools for data exploration</li>
+  <li>Write prompts that encourage exhaustive responses, like “extract information that <em>might</em> be relevant to X and summarize key points.” Essentially, let the LLM include potentially relevant information to help build a mental model of your dataset.</li>
+  <li>Keep output schemas simple initially–you can add structure later</li>
+  <li>Remember: prompts are Jinja templates (check <a href="https://ucbepic.github.io/docetl/">DocETL docs</a> or ask the AI assistant for syntax help)</li>
+</ul>
+
+<p><strong>3. Iterate One Step at a Time</strong></p>
+
+<ul>
+  <li>Build your pipeline operation by operation</li>
+  <li>Examine outputs one example at a time</li>
+  <li>Keep providing notes until you stop learning new things about your data/LLM behavior</li>
+  <li>Take advantage of the prompt improvement assistant</li>
+  <li>Gradually add more structure to your schemas as your understanding improves</li>
+</ul>
+
+<p><strong>4. Handle Complexity</strong></p>
+
+<ul>
+  <li>For very long documents or complex tasks, try the experimental optimize operation functionality, accessible through the operation menu dropdown. This will perform data or task decomposition (or both).</li>
+  <li>For resolve operations, always run optimization to make the operation cheaper and faster. Note that the optimizer requires OpenAI API keys.</li>
+</ul>
+
+<h2 id="whats-next-for-docwrangler">What’s Next for DocWrangler</h2>
+
+<p>While this current version of DocWrangler is already very powerful, there are several more exciting ideas we are thinking about:</p>
+
+<ul>
+  <li>Richer dynamic visualizations specific to each operator type, and the semantic meaning of the operation</li>
+  <li>Enhanced validation support, including:
+    <ul>
+      <li>Direct editing of individual outputs</li>
+      <li>Persistence of these direct edits across runs, even when there are prompt changes</li>
+    </ul>
+  </li>
+  <li>More interactive optimization capabilities</li>
+</ul>
+
+<p>If you’re interested in contributing to any of the above, or another DocWrangler project, please reach out to <a href="mailto:shreyashankar@berkeley.edu">shreyashankar@berkeley.edu</a>. You do not have to be a Berkeley student to join the group, but please mention it in your email if you are!</p>
+
+<p>DocWrangler is part of our broader mission to make LLM-powered data processing more accessible and effective. Our upcoming DocWrangler research paper will share our design principles, implementation details, and insights from our user studies–stay tuned! In the meantime, you can: try DocWrangler at <a href="docetl.org/playground">docetl.org/playground</a>, star our <a href="https://github.com/ucbepic/docetl">GitHub repository</a> to follow development, and join our <a href="https://discord.com/invite/fHp7B2X3xx">Discord community</a> for technical discussions and support.</p>
+
+<p>We’re excited to see how you’ll use DocWrangler in your own workflows and look forward to your feedback as we continue improving the IDE. Your experiences and suggestions will help shape the future of LLM-powered data processing tools!</p>
+
+<p><em><strong>Acknowledgments:</strong> We’re grateful to Stephen Lee and <a href="https://www.linkedin.com/in/mawilh">Mawil Hasan</a> for their collaboration and invaluable help with user studies, and to <a href="https://jamesdsmith.net/">James Smith</a> and <a href="https://people.eecs.berkeley.edu/~bjoern/">Björn Hartmann</a> for their insightful feedback throughout this project. This public research preview of DocWrangler is made possible by generous credits from <a href="https://modal.com/">Modal Labs</a> and <a href="https://www.microsoft.com/en-us/research/">Microsoft</a>.</em></p>
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>This iterative refinement is necessary because of a fundamental design challenge in complex workflows—what <a href="https://arxiv.org/abs/2309.14459">Subramonyam et al.</a> call bridging the “gulf of envisioning” between your goals and effective LLM interactions. <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>LLM-powered data processing is a rapidly growing field, with many research teams and startups developing systems. Some, like DocETL, focus on executing open-ended dataflow operations (e.g., map, reduce), such as <a href="https://vldb.org/cidrdb/papers/2025/p12-liu.pdf">Palimpzest</a> from MIT, <a href="https://arxiv.org/abs/2407.11418">LOTUS</a> from Stanford, and <a href="https://arxiv.org/abs/2409.00847">Sycamore</a> from Aryn. Others target specific tasks, such as Lloom for topic analysis and DiscipLink for aggregating and linking research papers based on user queries. <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p>Making this work required solving some interesting technical challenges, particularly around managing context windows (since datasets, pipelines, and sample outputs can easily exceed LLM token limits)—perhaps we’ll write another post about those solutions later, but feel free to ask about them on <a href="https://discord.gg/fHp7B2X3xx">Discord</a> if you’re curious! <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+</article>
+
+
+  <div class="share-page">
+  Share this post!
+
+  <div class="share-links">
+    
+      <a class="fa fa-facebook" href="https://facebook.com/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fblogs%2F2025%2F01%2F13%2Fdocwrangler%2F" rel="nofollow" target="_blank" title="Share on Facebook"></a>
+    
+
+    
+      <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?text=Interactive+LLM-Powered+Data+Processing+with+DocWrangler&amp;url=http%3A%2F%2Flocalhost%3A4000%2Fblogs%2F2025%2F01%2F13%2Fdocwrangler%2F" rel="nofollow" target="_blank" title="Share on Twitter"></a>
+    
+
+    
+
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/shareArticle?url=http%3A%2F%2Flocalhost%3A4000%2Fblogs%2F2025%2F01%2F13%2Fdocwrangler%2F&amp;title=Interactive+LLM-Powered+Data+Processing+with+DocWrangler" rel="nofollow" target="_blank" title="Share on LinkedIn"></a>
+    
+
+    
+
+    
+
+    
+      <a class="fa fa-reddit" href="https://www.reddit.com/submit?url=http%3A%2F%2Flocalhost%3A4000%2Fblogs%2F2025%2F01%2F13%2Fdocwrangler%2F&amp;title=Interactive+LLM-Powered+Data+Processing+with+DocWrangler" rel="nofollow" target="_blank" title="Share on Reddit"></a>
+    
+
+    
+
+    
+      <a class="fa fa-hacker-news" onclick="parent.postMessage('submit','*')" href="https://news.ycombinator.com/submitlink?u=http%3A%2F%2Flocalhost%3A4000%2Fblogs%2F2025%2F01%2F13%2Fdocwrangler%2F&amp;t=Interactive+LLM-Powered+Data+Processing+with+DocWrangler" rel="nofollow" target="_blank" title="Share on Hacker News"></a>
+    
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="center">
+  <div class="measure">
+    <small>
+      Theme crafted with &lt;3 by <a href="https://johno.com/">John Otander</a> (<a href="https://twitter.com/4lpine">@4lpine</a>).<br>
+      &lt;/&gt; available on <a href="https://github.com/johno/pixyll">GitHub</a>.
+    </small>
+  </div>
+</footer>
+
+<script type="text/javascript">
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js")
+    }
+</script>
+
+</body>
+</html>
