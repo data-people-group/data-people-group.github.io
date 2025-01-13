@@ -12,6 +12,7 @@ categories: blogs
 * *Try DocWrangler at [docetl.org/playground](http://docetl.org/playground)*
 * *Star our [GitHub repository](https://github.com/ucbepic/docetl) to follow development*
 * *Join our [Discord community](https://discord.com/invite/fHp7B2X3xx) for technical discussions and support*
+* *See a [video demo](https://youtu.be/ytAsNoTZfhw) of using DocWrangler to analyze common complaints in ICLR 2025 submission reviews; to help get familiar with DocWrangler and LLM-powered data processing*
 
 ---
 
@@ -165,7 +166,7 @@ While this current version of DocWrangler is already very powerful, there are se
 
 If you’re interested in contributing to any of the above, or another DocWrangler project, please reach out to [shreyashankar@berkeley.edu](mailto:shreyashankar@berkeley.edu). You do not have to be a Berkeley student to join the group, but please mention it in your email if you are!
 
-DocWrangler is part of our broader mission to make LLM-powered data processing more accessible and effective. Our upcoming DocWrangler research paper will share our design principles, implementation details, and insights from our user studies–stay tuned! In the meantime, you can: try DocWrangler at [docetl.org/playground](docetl.org/playground), star our [GitHub repository](https://github.com/ucbepic/docetl) to follow development, and join our [Discord community](https://discord.com/invite/fHp7B2X3xx) for technical discussions and support.
+DocWrangler is part of our broader mission to make LLM-powered data processing more accessible and effective. Our upcoming DocWrangler research paper will share our design principles, implementation details, and insights from our user studies–stay tuned! In the meantime, you can: try DocWrangler at [docetl.org/playground](docetl.org/playground), star our [GitHub repository](https://github.com/ucbepic/docetl) to follow development, and join our [Discord community](https://discord.com/invite/fHp7B2X3xx) for technical discussions and support. A video demo of using DocWrangler to analyze common complaints in ICLR 2025 submission reviews is available [here](https://youtu.be/ytAsNoTZfhw); to help you get familiar with both the DocWrangler workflow and LLM-powered data processing in general.
 
 We're excited to see how you'll use DocWrangler in your own workflows and look forward to your feedback as we continue improving the IDE. Your experiences and suggestions will help shape the future of LLM-powered data processing tools!
 
