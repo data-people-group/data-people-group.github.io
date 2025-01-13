@@ -8,17 +8,27 @@
     
       <item>
         <title>Interactive LLM-Powered Data Processing with DocWrangler</title>
-        <description>&lt;p&gt;&lt;em&gt;TLDR:&lt;/em&gt;&lt;/p&gt;
+        <description>&lt;figure style=&quot;text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 10px;&quot;&gt;
+  &lt;img src=&quot;/images/docwrangler/docwrangler_screenshot.png&quot; style=&quot;width:60%&quot; /&gt;
+ &lt;figcaption style=&quot;text-align: center; width:60%; font-style: italic; margin: auto;&quot;&gt;Screenshot of the DocWrangler IDE.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;&lt;em&gt;TLDR:&lt;/em&gt;&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;em&gt;Try DocWrangler at &lt;a href=&quot;http://docetl.org/playground&quot;&gt;docetl.org/playground&lt;/a&gt;&lt;/em&gt;&lt;/li&gt;
   &lt;li&gt;&lt;em&gt;Star our &lt;a href=&quot;https://github.com/ucbepic/docetl&quot;&gt;GitHub repository&lt;/a&gt; to follow development&lt;/em&gt;&lt;/li&gt;
   &lt;li&gt;&lt;em&gt;Join our &lt;a href=&quot;https://discord.com/invite/fHp7B2X3xx&quot;&gt;Discord community&lt;/a&gt; for technical discussions and support&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;See a &lt;a href=&quot;https://youtu.be/ytAsNoTZfhw&quot;&gt;video demo&lt;/a&gt; of using DocWrangler to analyze common complaints in ICLR 2025 submission reviews&lt;/em&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;hr /&gt;
 
-&lt;p&gt;LLM-powered data processing pipelines have a lot of promise, but building them is painful. &lt;strong&gt;Getting LLMs to do what you want involves constantly cycling between writing prompts, inspecting results, and refining both your prompts and your goals&lt;/strong&gt; as you discover what’s actually possible.&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; So, we built DocWrangler, an interactive development environment (IDE) that makes this process dramatically easier through instant feedback, visual exploration tools, and AI-powered assistance. &lt;strong&gt;DocWrangler is open-source, and a hosted version is available at &lt;a href=&quot;http://docetl.org/playground&quot;&gt;docetl.org/playground&lt;/a&gt; (no sign-up required).&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;LLM-powered data processing pipelines have a lot of promise, but building them is painful. Even with pipeline libraries like &lt;a href=&quot;https://www.docetl.org&quot;&gt;DocETL&lt;/a&gt;, getting LLMs to do what you want involves constantly cycling between writing prompts, inspecting results, and refining both your prompts and your goals as you discover what’s actually possible.&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; So, we built DocWrangler, an interactive development environment (IDE) that makes this process much easier through instant feedback, visual exploration tools, and AI-powered assistance. &lt;strong&gt;DocWrangler is open-source, and a hosted version is available at &lt;a href=&quot;http://docetl.org/playground&quot;&gt;docetl.org/playground&lt;/a&gt; (no sign-up required).&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;In this blog post, we’ll show you how DocWrangler improves the experience of working with LLM pipelines, whether you’re new to LLM-powered data processing or an experienced practitioner looking to streamline your workflow. We’ll discuss our motivations for building DocWrangler, demonstrate its features through practical examples, and share tips we’ve learned from successful users. Finally, we’ll conclude with what’s next.&lt;/p&gt;
 
@@ -37,20 +47,11 @@
 
 &lt;p&gt;Our system, &lt;a href=&quot;https://arxiv.org/abs/2410.12189&quot;&gt;DocETL&lt;/a&gt;, provides a declarative way to build these pipelines, similar to how SQL lets you express database operations without worrying about execution details.&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt; Since our release in &lt;a href=&quot;https://data-people-group.github.io/blogs/2024/09/24/docetl/&quot;&gt;September 2024&lt;/a&gt;, however, we’ve observed that many users struggle to write LLM-powered data processing pipelines effectively. In addition to the stage-specific challenges in the figure above, the challenges run deeper than just &lt;em&gt;“prompt engineering is hard.”&lt;/em&gt; Users often start with one goal in mind, &lt;a href=&quot;https://dl.acm.org/doi/10.1145/3654777.3676450&quot;&gt;only to discover they actually want something different once they see initial results&lt;/a&gt;. For example, when analyzing customer support conversations, you might think you want to extract specific issues mentioned. But after seeing the LLM’s outputs, you realize what you really want is to identify patterns in how support agents handle different types of complaints—something you couldn’t articulate until you saw the data processed in different ways.&lt;/p&gt;
 
-&lt;p&gt;This kind of iterative refinement isn’t unique to LLMs. For example, early data cleaning systems like &lt;a href=&quot;https://control.cs.berkeley.edu/pwheel-vldb.pdf&quot;&gt;Potter’s Wheel&lt;/a&gt; and &lt;a href=&quot;https://dl.acm.org/doi/10.1145/1978942.1979444&quot;&gt;Wrangler&lt;/a&gt; (which evolved into &lt;a href=&quot;https://www.alteryx.com/about-us/trifacta-is-now-alteryx-designer-cloud&quot;&gt;Trifacta&lt;/a&gt;) recognized that data transformation is inherently exploratory. Users need to see the effects of their changes immediately to understand if they’re moving in the right direction. LLM-powered data processing demands something more; an environment built around rapid iteration between examining data and refining pipelines, tools for exploring and validating LLM outputs at scale, and support for the natural evolution of analytical goals as you discover what’s possible with your data and the LLM (bridging the gulf of envisioning).&lt;/p&gt;
+&lt;p&gt;This kind of iterative refinement isn’t unique to LLMs. For example, early data cleaning systems like &lt;a href=&quot;https://control.cs.berkeley.edu/pwheel-vldb.pdf&quot;&gt;Potter’s Wheel&lt;/a&gt; and &lt;a href=&quot;https://dl.acm.org/doi/10.1145/1978942.1979444&quot;&gt;Wrangler&lt;/a&gt; (which evolved into &lt;a href=&quot;https://www.alteryx.com/about-us/trifacta-is-now-alteryx-designer-cloud&quot;&gt;Trifacta&lt;/a&gt;) recognized that data transformation is inherently exploratory. Users need to see the effects of their changes immediately to understand if they’re moving in the right direction. LLM-powered data processing demands something more; an environment built around rapid iteration between examining data and refining pipelines, tools for exploring and validating LLM outputs at scale, and support for the natural evolution of analytical goals as you discover what’s possible with your data and the LLM (bridging the &lt;a href=&quot;https://arxiv.org/abs/2309.14459&quot;&gt;gulf of envisioning&lt;/a&gt;).&lt;/p&gt;
 
 &lt;p&gt;Existing development interfaces don’t adequately support this workflow. Traditional IDEs and LLM pipeline builders focus on chaining simple prompts rather than supporting complex data processing operations, and none provide the rich, immediate feedback loop needed to work effectively with LLMs. This is the gap DocWrangler aims to fill.&lt;/p&gt;
 
 &lt;h2 id=&quot;what-is-docwrangler&quot;&gt;What is DocWrangler?&lt;/h2&gt;
-
-&lt;figure style=&quot;text-align: center;
-    align-content: center;
-    font-size: 15px; 
-    margin: auto;
-    margin-bottom: 20px;&quot;&gt;
-  &lt;img src=&quot;/images/docwrangler/docwrangler_screenshot.png&quot; style=&quot;width:100%&quot; /&gt;
- &lt;figcaption style=&quot;text-align: center; width:100%; font-style: italic; margin: auto;&quot;&gt;Screenshot of the DocWrangler IDE, publicly available at &lt;a href=&quot;http://docetl.org/playground&quot;&gt;docetl.org/playground&lt;/a&gt;.&lt;/figcaption&gt;
-&lt;/figure&gt;
 
 &lt;p&gt;&lt;strong&gt;DocWrangler is an IDE designed for building and refining LLM-powered data processing pipelines&lt;/strong&gt;. While the core ideas behind DocWrangler could support any LLM data processing framework, our current implementation is built on top of DocETL. As the primary developers of DocETL and having worked closely with its growing user base, it was natural for us to start there.&lt;/p&gt;
 
@@ -170,7 +171,7 @@
 
 &lt;p&gt;If you’re interested in contributing to any of the above, or another DocWrangler project, please reach out to &lt;a href=&quot;mailto:shreyashankar@berkeley.edu&quot;&gt;shreyashankar@berkeley.edu&lt;/a&gt;. You do not have to be a Berkeley student to join the group, but please mention it in your email if you are!&lt;/p&gt;
 
-&lt;p&gt;DocWrangler is part of our broader mission to make LLM-powered data processing more accessible and effective. Our upcoming DocWrangler research paper will share our design principles, implementation details, and insights from our user studies–stay tuned! In the meantime, you can: try DocWrangler at &lt;a href=&quot;docetl.org/playground&quot;&gt;docetl.org/playground&lt;/a&gt;, star our &lt;a href=&quot;https://github.com/ucbepic/docetl&quot;&gt;GitHub repository&lt;/a&gt; to follow development, and join our &lt;a href=&quot;https://discord.com/invite/fHp7B2X3xx&quot;&gt;Discord community&lt;/a&gt; for technical discussions and support.&lt;/p&gt;
+&lt;p&gt;DocWrangler is part of our broader mission to make LLM-powered data processing more accessible and effective. Our upcoming DocWrangler research paper will share our design principles, implementation details, and insights from our user studies–stay tuned! In the meantime, you can: try DocWrangler at &lt;a href=&quot;docetl.org/playground&quot;&gt;docetl.org/playground&lt;/a&gt;, star our &lt;a href=&quot;https://github.com/ucbepic/docetl&quot;&gt;GitHub repository&lt;/a&gt; to follow development, and join our &lt;a href=&quot;https://discord.com/invite/fHp7B2X3xx&quot;&gt;Discord community&lt;/a&gt; for technical discussions and support. A video demo of using DocWrangler to analyze common complaints in ICLR 2025 submission reviews is available &lt;a href=&quot;https://youtu.be/ytAsNoTZfhw&quot;&gt;here&lt;/a&gt;; to help you get familiar with both the DocWrangler workflow and LLM-powered data processing in general.&lt;/p&gt;
 
 &lt;p&gt;We’re excited to see how you’ll use DocWrangler in your own workflows and look forward to your feedback as we continue improving the IDE. Your experiences and suggestions will help shape the future of LLM-powered data processing tools!&lt;/p&gt;
 
@@ -178,10 +179,10 @@
 &lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
   &lt;ol&gt;
     &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
-      &lt;p&gt;This iterative refinement is necessary because of a fundamental design challenge in complex workflows—what &lt;a href=&quot;https://arxiv.org/abs/2309.14459&quot;&gt;Subramonyam et al.&lt;/a&gt; call bridging the “gulf of envisioning” between your goals and effective LLM interactions. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;This iterative refinement is necessary because of a fundamental design challenge in complex LLM workflows—what &lt;a href=&quot;https://arxiv.org/abs/2309.14459&quot;&gt;Subramonyam et al.&lt;/a&gt; call bridging the “gulf of envisioning” between your goals and effective LLM interactions. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
     &lt;/li&gt;
     &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
-      &lt;p&gt;LLM-powered data processing is a rapidly growing field, with many research teams and startups developing systems. Some, like DocETL, focus on executing open-ended dataflow operations (e.g., map, reduce), such as &lt;a href=&quot;https://vldb.org/cidrdb/papers/2025/p12-liu.pdf&quot;&gt;Palimpzest&lt;/a&gt; from MIT, &lt;a href=&quot;https://arxiv.org/abs/2407.11418&quot;&gt;LOTUS&lt;/a&gt; from Stanford, and &lt;a href=&quot;https://arxiv.org/abs/2409.00847&quot;&gt;Sycamore&lt;/a&gt; from Aryn. Others target specific tasks, such as Lloom for topic analysis and DiscipLink for aggregating and linking research papers based on user queries. &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;LLM-powered data processing is a rapidly growing field, with many research teams and startups developing systems. Some, like DocETL, focus on executing open-ended dataflow operations (e.g., map, reduce), such as &lt;a href=&quot;https://vldb.org/cidrdb/papers/2025/p12-liu.pdf&quot;&gt;Palimpzest&lt;/a&gt; from MIT, &lt;a href=&quot;https://arxiv.org/abs/2407.11418&quot;&gt;LOTUS&lt;/a&gt; from Stanford, and &lt;a href=&quot;https://arxiv.org/abs/2409.00847&quot;&gt;Sycamore&lt;/a&gt; from Aryn. Others target specific tasks, such as &lt;a href=&quot;https://dl.acm.org/doi/10.1145/3613904.3642830&quot;&gt;Lloom&lt;/a&gt; for topic induction and analysis and &lt;a href=&quot;https://dl.acm.org/doi/10.1145/3654777.3676366&quot;&gt;DiscipLink&lt;/a&gt; for aggregating and linking research papers based on user queries. &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
     &lt;/li&gt;
     &lt;li id=&quot;fn:3&quot; role=&quot;doc-endnote&quot;&gt;
       &lt;p&gt;Making this work required solving some interesting technical challenges, particularly around managing context windows (since datasets, pipelines, and sample outputs can easily exceed LLM token limits)—perhaps we’ll write another post about those solutions later, but feel free to ask about them on &lt;a href=&quot;https://discord.gg/fHp7B2X3xx&quot;&gt;Discord&lt;/a&gt; if you’re curious! &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
