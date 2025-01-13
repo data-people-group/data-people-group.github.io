@@ -7,12 +7,21 @@ summary: DocWrangler is an IDE that provides instant feedback, visual exploratio
 categories: blogs
 ---
 
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 10px;">
+  <img src="/images/docwrangler/docwrangler_screenshot.png"  style="width:60%">
+ <figcaption style="text-align: center; width:60%; font-style: italic; margin: auto;">Screenshot of the DocWrangler IDE.</figcaption>
+</figure>
+
 *TLDR:*
 
 * *Try DocWrangler at [docetl.org/playground](http://docetl.org/playground)*
 * *Star our [GitHub repository](https://github.com/ucbepic/docetl) to follow development*
 * *Join our [Discord community](https://discord.com/invite/fHp7B2X3xx) for technical discussions and support*
-* *See a [video demo](https://youtu.be/ytAsNoTZfhw) of using DocWrangler to analyze common complaints in ICLR 2025 submission reviews; to help get familiar with DocWrangler and LLM-powered data processing*
+* *See a [video demo](https://youtu.be/ytAsNoTZfhw) of using DocWrangler to analyze common complaints in ICLR 2025 submission reviews*
 
 ---
 
@@ -44,15 +53,6 @@ Existing development interfaces don't adequately support this workflow. Traditio
 
 
 ## What is DocWrangler?
-
-<figure style="text-align: center;
-    align-content: center;
-    font-size: 15px; 
-    margin: auto;
-    margin-bottom: 20px;">
-  <img src="/images/docwrangler/docwrangler_screenshot.png"  style="width:100%">
- <figcaption style="text-align: center; width:100%; font-style: italic; margin: auto;">Screenshot of the DocWrangler IDE, publicly available at <a href="http://docetl.org/playground">docetl.org/playground</a>.</figcaption>
-</figure>
 
 **DocWrangler is an IDE designed for building and refining LLM-powered data processing pipelines**. While the core ideas behind DocWrangler could support any LLM data processing framework, our current implementation is built on top of DocETL. As the primary developers of DocETL and having worked closely with its growing user base, it was natural for us to start there.
 
