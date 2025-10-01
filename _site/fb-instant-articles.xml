@@ -9,6 +9,435 @@
     
         
             <item>
+                <title>The First Decade as Faculty - Looking Back</title>
+                <link>http://localhost:4000/blogs/2025/09/30/ten-papers/</link>
+                <content:encoded>
+                    <![CDATA[
+                    <p>My first decade as faculty ended in  August 2024. 
+Assuming a typical career of four decades, this would mean that I’ve completed 
+the first quarter of my faculty career. 
+So I wanted to share my ten favorite papers from this rather substantial period, 
+with a bit of reflection and backstory. 
+<em>And yes, I know August 2024 happened a year ago—with this blog post languishing as a draft since, but better late than never!</em></p>
+
+<p>Onto the ten papers; I’ll discuss them in three  buckets: 
+visualization (3 papers), spreadsheets (3 papers), and miscellaneous—one paper each on data versioning, 
+dataframes, scalable ML, and notebooks.
+I will then discuss themes and takeaways from the decade.</p>
+
+<h2 id="visualization">Visualization</h2>
+
+<h3 id="1-seedb-vldb-2015">1. SeeDB, VLDB 2015</h3>
+
+<p>I got interested in visualization after watching <a href="https://homes.cs.washington.edu/~jheer/">Jeff Heer</a> 
+give a talk at the end of my PhD—specifically around trying to make visual data analysis more automated and scalable. 
+The <a href="https://dl.acm.org/doi/10.14778/2831360.2831371">SeeDB paper</a>, led by <a href="https://www.linkedin.com/in/manasi-vartak/">Manasi Vartak</a>, 
+was one of the first research efforts I kick-started as a postdoc with <a href="https://db.csail.mit.edu/madden/">Sam Madden</a> and continued as faculty, and one of the very first papers on <em>visualization recommendations</em>—accelerating analysis by automatically suggesting interesting visualizations to users. SeeDB prioritized data-centric differences, basically, recommending visualizations if it showed a pattern that deviated from the rest. 
+The key nugget was casting visualization recommendation as <em>search through a large space of SQL queries (one per visualization)</em>: SeeDB pioneered the use of multi-query optimization and approximate query processing to search through this space efficiently.</p>
+
+<p>Due to SeeDB and subsequent efforts, visualization recommendation is everywhere; popular BI tools like PowerBI (via <a href="https://dl.acm.org/doi/abs/10.1145/3299869.3314037">QuickInsights</a>) 
+and Tableau (via <a href="https://help.tableau.com/current/pro/desktop/en-us/ask_data.htm">AskData</a>/<a href="https://www.tableau.com/blog/available-today-explain-data-tableau-catalog-and-tableau-server-management-add">ExplainData</a>) 
+support variants of it. In particular, PowerBI uses an approach to recommend visualizations that is very similar to SeeDB.</p>
+
+<p>I suspect we’re going to only see SeeDB’s ideas of efficiently churning through a space of visualizations to find insights rise in importance in the era of <a href="https://arxiv.org/abs/2509.00997">agents performing data analysis on our behalf</a>!  In particular, multi-query optimization and approximate query processing is essential to ensure that agents (which can generate 1000s of queries a second) can make progress quickly.</p>
+
+<h3 id="2-zenvisage-vldb-2017">2. Zenvisage, VLDB 2017</h3>
+
+<p><a href="https://www.vldb.org/pvldb/vol10/p457-siddiqui.pdf">Zenvisage</a>, led by <a href="https://www.linkedin.com/in/tariquesdd/">Tarique Siddiqui</a>, was our second crack at visualization recommendation.  With Zenvisage, which was developed in collaboration with experts in genomics, astrophysics, battery science, we built on SeeDB ideas to ask: <em>instead of just providing visualization recommendations, what if we could support active search for visualizations, based on patterns</em>?</p>
+
+<p>With the Zenvisage UI, users could drag and drop a visualization onto a canvas to “search” for similar visualizations, or could sketch a pattern. Zenvisage also introduced a query language, ZQL (yes, “zee quel”), to comb through visualization collections based on various criteria.  SeeDB queries were simply a special case of ZQL. The “ultimate query” in ZQL was akin to: <em>for all products whose sales trends are similar to those of chair, find those whose profits have increased the most</em> — still cool when I think about it years later. Admittedly ZQL was ahead of its time; maybe we’ll have a rich data analysis language that admits reasoning about high-level patterns at some point!</p>
+
+<p>An accompanying paper on the design process that led to Zenvisage was published at VIS with my favorite paper title of all time: <a href="https://arxiv.org/abs/1710.00763"><em>You can’t always sketch what you want</em></a> (i.e., sketch-based querying is insufficient). Tarique’s next paper on extending Zenvisage to support approximate search for similar shapes, <a href="https://dl.acm.org/doi/10.1145/3318464.3389722">ShapeSearch</a>, won the SIGMOD best paper award.</p>
+
+<h3 id="3-lux-vldb-2022">3. Lux, VLDB 2022</h3>
+
+<p>Our third major visualization recommendation effort, <a href="https://arxiv.org/abs/2105.00121">Lux</a>, led by <a href="https://www.linkedin.com/in/dorisjlee/">Doris Lee</a>, gained significant adoption. 
+The main missing ingredient from our past efforts was that they weren’t integrated into existing user workflows, leading
+to them being not as <em>sticky</em> as a result. As an academic group, we couldn’t really get our features embedded within BI tools (even if the ideas themselves were adopted, see above), so we did the next best thing—we built an open-source visualization recommendation tool that wraps around pandas and generates visualizations “on the fly” whenever you print your dataframe.</p>
+
+<p>Easier said than done, as dataframes are messy, with data in various stages of cleaning, and have heterogeneous data types. Lux leveraged clever caching and background computation to make the process interactive, with the ability to pin a set of visualizations as “views” to be tracked through data wrangling. Users were always in control: they could export the recommendations as code, and could further tailor them based on their preferences, expressed via code or interactions.</p>
+
+<p>Lux was used by data scientists across a whole host of disciplines and industries, with over 750K downloads. My favorite example of a Lux user was a doctor who was self-taught and ended up using Lux to explore hospital visit data. Interestingly, one of the most commonly requested features was the ability to export visualizations as images, so that the users could embed them into their powerpoint presentations.</p>
+
+<h2 id="spreadsheets">Spreadsheets</h2>
+
+<h3 id="4-dataspread-icde-2018">4. Dataspread, ICDE 2018</h3>
+
+<p>Early on at Illinois, <a href="https://www.linkedin.com/in/mangesh-bendre/">Mangesh Bendre</a> got me excited about spreadsheets; 
+how they were understudied, and how, if 
+only we could figure out a way to make them better, 
+we could impact the lives of so many of those who rely on them as their primary data management and analysis system.
+Enter <a href="https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8509241">Dataspread</a>: the goal was to build a scalable spreadsheet—unconstrained by limitations of 
+current spreadsheets (e.g., capped at a million rows), and is interactive at scale.</p>
+
+<p>Our first bite of this apple came with our effort to redesign the storage layer for spreadsheets. 
+We developed a hybrid data model for spreadsheets, where one could represent tabular regions differently from ad-hoc formulae and value scattered in the spreadsheet, with the latter being represented in a key-value format, where the key was the pair (row #, column #). But my favorite contribution from that paper was an index that supports ordered lookup (remember, spreadsheets are ordered!) with updates (rows/columns being added/deleted), 
+using a variant of B+trees, the <a href="https://www.chiark.greenend.org.uk/~sgtatham/algorithms/cbtree.html">counted B+tree</a>.
+Sadly, this paper took a while to get published—often, the first paper in a new area has that issue, but I’m still proud of the result.</p>
+
+<h3 id="5-anti-freeze-sigmod-2019">5. Anti-freeze, SIGMOD 2019</h3>
+
+<p>Moving beyond storage, the <a href="https://dl.acm.org/doi/10.1145/3299869.3319876">second Dataspread paper</a>, led by <a href="https://en.eng.ku.ac.th/?professor=dr-tana-wattanawaroon">Tana Wattanawaroon</a> and Mangesh, was on formula computation. 
+On complex spreadsheets, formula computation is a pain: spreadsheet systems will simply freeze until the computation is complete.</p>
+
+<p>We realized that there was a better way: after a change, instead of hanging until computation was complete, 
+we could <em>hide away in-progress cells with progress bars, and return all other unaffected cells immediately</em>. 
+Determining which cells were affected wasn’t easy, nor was determining how to compute the affected ones. 
+One of my favorite contributions in this work 
+was a new metric for interactivity that we called “<em>availability</em>”: the area under the curve of the number of cells a user could act on over time.</p>
+
+<p>This paper later influenced work on <a href="https://www.vldb.org/pvldb/vol16/p1494-tang.pdf">transactional panorama</a>, led by Dixin Tang, 
+where we explored looser notions of consistency for BI tools, 
+balancing what the user can act on, how up-to-date the results are (and whether they “move forward in time”), 
+and how consistent they are with each other. This work (which won a “best of VLDB”) opens up a new research 
+direction of transactions meets UX….if only someone would pick it back up!</p>
+
+<h3 id="6-benchmarking-sigmod-2020">6. Benchmarking, SIGMOD 2020</h3>
+
+<p>As we were working on Dataspread, we realized: we didn’t know much about performance of present-day spreadsheets on various workloads. 
+<a href="https://sajjadur.net/">Sajjadur Rahman</a> led <a href="https://dl.acm.org/doi/10.1145/3318464.3389782">the effort to benchmark</a> Excel, Sheets, and OpenOffice Calc on various workloads. 
+Spreadsheets were awful, becoming <em>unresponsive on as few as 50,000 rows</em>.   To do so, Sajjadur had to contend with the sparse documentation for all of these different spreadsheets; figuring out how to instrument them to collect timing information: a real pain.  I quote stats from this paper often, and to date, this paper is our best understanding of spreadsheet performance—and implementation.</p>
+
+<h2 id="miscellaneous">Miscellaneous</h2>
+
+<h3 id="7-orpheusdb-vldb-2017">7. OrpheusDB, VLDB 2017</h3>
+
+<p>The genesis of Orpheus was the <a href="https://people.csail.mit.edu/anantb/public/docs/research/datahub/datahub-cidr-15.pdf">Datahub project</a> at MIT, from when <a href="https://people.cs.uchicago.edu/~aelmore/">Aaron Elmore</a> and I were postdocs with <a href="https://db.csail.mit.edu/madden/">Sam Madden</a>.  One big concern that emerged in our work then was that it’s hard to convince people to use an entirely new system <em>just</em> for data versioning — <em>so how much could we repurpose existing database systems to support data versioning in a “bolt-on” fashion</em>? (As in Lux, not requiring users to change existing workflows is a recurring theme.)</p>
+
+<p><a href="https://www.linkedin.com/in/silu-huang-75b98a64/">Silu Huang</a> and <a href="https://www.linkedin.com/in/liqi-xu-00133849/">Liqi Xu</a> led the charge in developing <a href="https://arxiv.org/abs/1703.02475">OrpheusDB</a>: they showed that diff-based representations, as in source-code versioning systems, are ineffective in supporting advanced queries or retrieval on versions. Instead, representations that more directly encode the bipartite graph between versions and tuples is the way to go, coupled with intelligent partitioning to reduce redundancy. What I liked about the paper was that it covered a lot of ground: new query constructs, new data models, new storage optimization frameworks—and had some nice theory to boot. This paper was originally rejected at SIGMOD, but then got a “best of conference” at VLDB; go figure.</p>
+
+<h3 id="8-modin-vldb-2022">8. Modin, VLDB 2022</h3>
+
+<p>This <a href="https://www.vldb.org/pvldb/vol15/p739-petersohn.pdf">paper</a>, led by <a href="https://www.linkedin.com/in/devinpetersohn/">Devin Petersohn</a> and <a href="https://dx-tang.github.io/">Dixin Tang</a>, was our second paper on dataframes, as part of our effort to develop <a href="https://github.com/modin-project/modin">Modin</a>, a scalable drop-in replacement for pandas. As in Orpheus and Lux, the drop-in bit was important: this meant users could simply reuse their existing pandas scripts. Our first paper on <a href="https://arxiv.org/abs/2001.00888">scalable dataframes</a> in VLDB 2020 laid out an algebra for dataframes showing how they support operations across rows, columns (e.g., filter columns with null values), or even blocks (e.g., regex replace across the dataframe).  But figuring out how to optimize computation with this new set of primitives was challenging.</p>
+
+<p>In this paper, we figured out how to parallelize individual operators, and then how to use that to optimize entire pipelines. We introduced row, column, and block-wise decomposition—i.e., operating on groups of rows, columns or blocks in parallel, depending on the operator—and optimizing dataframe pipelines with sequences of operators by selecting the right decomposition at each stage—with appropriate pipelining or shuffle operators in-between.</p>
+
+<p>This paper laid the groundwork for Modin’s remarkable open-source success: at the time of publication, at the 1M downloads mark, but now at <em>46M(!)</em>.  Modin, along with Lux (above), led Devin, Doris, and I to start Ponder, in 2021, centered around better data science tooling—and was then <a href="https://www.snowflake.com/en/blog/snowflake-to-acquire-ponder/">acquired by Snowflake</a> in October 2023. Modin now forms the basis of Snowflake’s dataframe offering.</p>
+
+<h3 id="9-helix--vldb-2019">9. Helix,  VLDB 2019</h3>
+
+<p>This <a href="https://www.vldb.org/pvldb/vol12/p446-xin.pdf">paper</a>, led by <a href="https://www.linkedin.com/in/doris-xin/">Doris Xin</a>, was my first foray into machine learning proper. Doris was excited about exploring human-in-the-loop machine learning. We identified an opportunity: users often make small tweaks to their pipeline, but end up rerunning the entire pipeline from scratch. <em>What if we could avoid running what wasn’t necessary, reusing results from previous iterations?</em> Helix’s core problem ended up getting cast as an elegant max-flow/min-cut problem that makes a decision for each step: do you re-read results from disk, or do you recompute given inputs?  After Helix, Doris worked on a <a href="https://arxiv.org/abs/2101.04834">survey on how people use AutoML</a>; our first such industry survey-based paper that ended up at CHI, and also serving as a template for other work in the group that happened later.</p>
+
+<h3 id="10-nbsafety-vldb-2021">10. NBSafety, VLDB 2021</h3>
+
+<p>My student <a href="https://smacke.net/">Stephen Macke</a> got inspired by watching Joel Grus’ talk on how notebooks <a href="https://docs.google.com/presentation/u/1/d/1n2RlMdmv1p25Xy5thJUhkKGvjtV-dkAIsUXP-AL4ffI/edit?pli=1&amp;authuser=1">sucked</a> and wanted to fix them. In particular, we started with reproducibility and the fact that in notebooks, if you (as a user) don’t remember the dependencies between cells, there is a very real danger of you forgetting to run the cells in the right sequence, resulting in downstream errors and lack of reproducibility. With <a href="https://arxiv.org/abs/2012.06981">nbsafety</a>, users get lightweight cues alongside the notebook based on whether a cell is safe to be rerun (i.e., all its dependencies have been rerun), or unsafe, as green or red highlights. This small UI change had to be enabled by a lot of work on the PL side, specifically using a combination of static and dynamic analysis.</p>
+
+<p>Nbsafety was successful as an open-source project, with over 350K+ downloads. Follow-on work also explored automatically extracting a <a href="https://smacke.net/papers/nbslicer.pdf">reproducible snippet for a specific artifact</a>.  Nbsafety and other projects also <a href="https://marimo.io/">led</a> <a href="https://hex.tech/blog/hex-two-point-oh/">to</a> <a href="https://observablehq.com/platform/notebooks">notebooks</a> offering an alternate paradigm of reactivity where all downstream cells are automatically executed, as opposed to manual execution.</p>
+
+<h2 id="reflections-and-takeaways">Reflections and takeaways</h2>
+<p>Overall, the papers above covered most years in the 2014—2024 decade, except a few (2016, 2023), with no year having more than two papers. And they covered the vast majority of students who worked with me in that period, including Devin, Dixin, Doris L, Doris X, Liqi, Manasi, Mangesh, Sajjadur, Silu, Stephen, Tana, and Tarique—an amazing group, who are all leading the way in industry or academia.</p>
+
+<p>Now, for some reflections from that period:</p>
+
+<ul>
+  <li><em>Drop-in/bolt-on is the way to go</em>: Better technology doesn’t mean more adoption. Given humans don’t typically want to change their tools or workflows, it’s better to try to make those existing tools or workflows better, rather than trying to force users to change their approach. While I don’t think this is universally applicable (otherwise we’ll just keep using the same tools over time), it is one important strategy to make sure one’s work is useful.</li>
+  <li><em>Working with end-users is incredibly satisfying</em>: throughout this decade, we sought out users—be it groups in other disciplines or in industry, or the open-source community at large. Engaging users early helped us make sure that we weren’t solving non-problems. But to work effectively with users, we had to get trained in HCI: I started this decade without knowing how to do a user study, and figured it out as I went along, with ample help from <a href="https://en.wikipedia.org/wiki/Karrie_Karahalios">Karrie Karahalios</a>.</li>
+  <li><em>Understudied spaces often have the richest problems</em>, as we learned from looking at spreadsheets, dataframes, or notebooks, none of which had an established sub-community of researchers. While figuring out how to publish in these spaces is an entirely different manner, the lack of competition makes it such that you can take your time to publish—and when you do, it is more likely to define the field.</li>
+  <li><em>It’s hard to predict when ideas will be useful</em>: as an example, ideas from SeeDB are seeing a resurgence in the era of agentic AI, where agents similarly want to issue a massive number of speculative probes to a backend data system, as is Orpheus, since agents will need lightweight branches and merges when operating on data at scale.</li>
+  <li><em>The push-pull of academia</em>: In writing up this post, I realized that I got pulled in so many directions by students — as often as I pulled them. Working with students in places like Illinois or Berkeley is such a blessing, you learn so very much.</li>
+  <li><em>Building big, ambitious systems is fun and challenging!</em> In picking papers to list, I realize I mostly listed big system building efforts, rather than other more algorithmic papers. While my PhD centered on more algorithmically-inclined work, I found, in my postdoc and beyond that system building efforts were a lot more exciting and had greater impact—in no small part because we thought long and hard about how the systems ended up getting adopted and used!</li>
+</ul>
+
+<p>What a fun decade — now onto the next one!</p>
+
+
+                    ]]>
+                </content:encoded>
+                <guid isPermaLink="false">/blogs/2025/09/30/ten-papers/</guid>
+                <description>
+                    
+                    Aditya reflects on his greatest hits from the first decade of facultyhood
+                    
+                </description>
+                <pubDate>Tue, 30 Sep 2025 00:00:00 -0700</pubDate>
+                <author></author>
+            </item>
+        
+    
+        
+            <item>
+                <title>Low-Cost LLM-Powered Data Processing with BARGAIN</title>
+                <link>http://localhost:4000/blogs/2025/09/16/bargain/</link>
+                <content:encoded>
+                    <![CDATA[
+                    <ul>
+  <li>Try out BARGAIN <a href="https://github.com/ucbepic/BARGAIN/">here</a></li>
+  <li>Read more in our <a href="https://arxiv.org/pdf/2509.02896">paper</a> (in SIGMOD’26)</li>
+</ul>
+
+<p>LLMs are increasingly being used to process large-scale text datasets (or equivalently, text columns in relational datasets). They could, for example, filter text records based on a natural language condition, extract a desired attribute from each record, or classify them based on some property. These tasks essentially follow the same recipe: apply an LLM with a fixed prompt to every record in the dataset, one by one. To get high accuracy for such tasks, users want to apply top-of-the-line LLMs, but this quickly gets expensive—the more so the larger the dataset and the longer the texts are. We introduce the BARGAIN library, which <em>reduces cost by using a cheaper LLM</em> to process the records whenever possible, but provides <em>statistically guarantees similar accuracy as top-of-the-line LLMs</em>. So you get low cost and high accuracy when processing data with LLMs!</p>
+
+<h2 id="how-does-it-work">How Does it Work</h2>
+<p>To process a data (i.e., text) record with an LLM given a prompt, BARGAIN first runs the cheap model on the data record. Based on the model’s output log-probabilities it decides whether to trust the cheap model or not. If it decides the cheap model’s output is inaccurate, it then runs the more expensive model.</p>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="/images/bargain/bargain_workflow.png" style="width:90%" />
+</figure>
+
+<p>To decide whether to trust the cheap model, BARGAIN uses a threshold on its log-probabilities: if the cheap model’s output log-probability is more than the threshold, BARGAIN uses the cheap model’s output but otherwise uses the more expensive model. Easy peasy!</p>
+
+<p>The magic all comes down to determining the threshold, which happens in a preprocessing step. The threshold is set to a value that provides the following theoretical guarantees on output accuracy: given an accuracy target T, BARGAIN guarantees the output matches the expensive model’s output at least on T% of the data records, but uses the cheap model on as many records as possible. This guarantee is achieved through sampling and labeling a few records in a calibration step to estimate a suitable threshold on log-probabilities. BARGAIN also supports providing theoretical guarantees on recall and precision metrics for filtering tasks, in addition to accuracy. BARGAIN makes use of sophisticated statistical machinery from <a href="https://arxiv.org/abs/2010.09686">recent work in statistics</a>, making it possible to provide tight guarantees with few samples.</p>
+
+<h2 id="why-bargain">Why BARGAIN?</h2>
+<p>There are many systems that claim to reduce cost while providing good accuracy. Most don’t provide any guarantees at all on output accuracy (e.g., <a href="https://arxiv.org/abs/2305.05176">FrugalGPT</a>) and may cut cost at the expense of accuracy. BARGAIN reduces costs while providing theoretical guarantees on output accuracy.</p>
+
+<p>Until BARGAIN, the state-of-the-art approach that provided guarantees was <a href="https://arxiv.org/abs/2004.00827">SUPG</a>, which unfortunately provides weaker guarantees and worse utility: it uses the expensive LLM much more than needed to provide a weaker accuracy guarantee than BARGAIN. BARGAIN provides these benefits through an improved sampling process (BARGAIN performs adaptive sampling) and better estimation of LLM accuracy (BARGAIN uses recent statistical tools for estimation).</p>
+
+<p>We compared SUPG with BARGAIN across 8 different real-world datasets in the figure below, comparing the fraction of expensive LLM calls avoided (to measure cost savings), averaged across the datasets. BARGAIN reduces cost significantly more than SUPG. The figure also shows a naive method that provides the same theoretical guarantees as BARGAIN with a naive sampling and estimation process (using uniform sampling and Hoeffding’s inequality for estimation). The results show that BARGAIN’s innovations in sampling and estimation are necessary to achieve high utility.</p>
+
+<p><em>Overall, BARGAIN reduces use of expensive models by more than 86% compared with state-of-the-art while guaranteeing 90% accuracy</em>.</p>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="/images/bargain/results.png" style="width:35%" />
+</figure>
+
+<h2 id="use-bargain-and-read-more">Use BARGAIN and Read More</h2>
+<p>Try out BARGAIN <a href="https://github.com/ucbepic/BARGAIN/">here</a> and read more about it in our <a href="https://arxiv.org/pdf/2509.02896">SIGMOD’26 paper</a>. We’d love to hear any feedback! Reach out at: zeighami@berkeley.edu or file an issue on GitHub!</p>
+
+                    ]]>
+                </content:encoded>
+                <guid isPermaLink="false">/blogs/2025/09/16/bargain/</guid>
+                <description>
+                    
+                    BARGAIN reduces cost of data processing with LLMs while providing statistical guarantees on output quality
+                    
+                </description>
+                <pubDate>Tue, 16 Sep 2025 00:00:00 -0700</pubDate>
+                <author></author>
+            </item>
+        
+    
+        
+            <item>
+                <title>Liberating Structured Data from PDF Prisons</title>
+                <link>http://localhost:4000/blogs/2025/04/30/twix/</link>
+                <content:encoded>
+                    <![CDATA[
+                    <p>Many real-world documents (think PDFs and Word files) often contain structured data embedded within, such as tables or key-value pairs. A particularly common class of documents are those that are programmatically generated by filling fields following a visual template—we call these <strong>templatized documents</strong>—think tax forms, invoices, financial reports, pay stubs, certification records, expense reports, and purchase orders. These documents contain a rich treasure trove of information, all locked away in inaccessible formats. What if we could liberate structured data from these PDF and Word prisons?</p>
+
+<p>Unfortunately, doing so is challenging: first, the documents vary in format, often employing a visual template with a heterogeneous, nested structure, including tables and key-value pairs. Second, the scale of such documents trips us up because they can be easily generated at scale programmatically following the visual template.</p>
+
+<p>But surely there’s a tool for this! Unfortunately, state-of-the-art data extraction APIs (e.g., AWS Textract or Azure Document Intelligence) or text- or vision-based Large Language Models (LLMs) don’t quite work: they achieve only 25%–65% precision and recall on a benchmark of 34 real-world datasets. And they definitely don’t work at scale, incurring high cost and latency because they operate page-by-page. For example, GPT-4 Vision takes 30+ hours and $50+ to extract data from 2000+ pages.</p>
+
+<p>So, we ask the question: <strong>can we first infer the underlying template in such documents, and then extract data, rather than directly extracting from documents?</strong> We use this insight to develop <strong>TWIX</strong>, a data extraction tool that extracts structured data from a templatized document collection by reconstructing its template. TWIX infers the underlying template, which encodes how the structured data is organized in documents, and then further extracts data based on the template at no-cost, efficiently, and accurately.</p>
+
+<p>TWIX outperforms 6 state-of-the-art data extraction tools by over 25% in precision and recall, and is <strong>520× faster and 3786× cheaper</strong> than the most competitive baseline, GPT-4 Vision. Instead of relying on LLMs to do the extraction from complex documents, TWIX uses careful reasoning about the repeated nature of the visual template—coupled with careful invocations of LLMs to help impart semantic information—to provide a solution that dominates others across all aspects: <strong>cost, accuracy, and speed</strong>.</p>
+
+<hr />
+
+<h2 id="challenges-in-structured-data-extraction-from-documents">Challenges in Structured Data Extraction from Documents</h2>
+
+<p>Templatized documents—those generated from structured data using a consistent visual template—are everywhere. Think: invoices, pay stubs, police reports, tax forms. They’re visually repetitive, but extracting structured data from them remains a challenge for existing tools. Why?</p>
+
+<ul>
+  <li><strong>Heterogeneity</strong>: These documents blend tables, key-value blocks, and metadata.</li>
+  <li><strong>Visual Complexity</strong>: Extracting data means understanding not just text but layout—what’s aligned, nested, and repeated.</li>
+  <li><strong>Cost &amp; Latency</strong>: Data extraction page by page using LLMs or pretrained extraction APIs is painfully slow and expensive.</li>
+</ul>
+
+<h2 id="our-insight">Our Insight</h2>
+
+<p>Instead of treating data extraction in every page as a fresh problem, TWIX reverses the generation process: it infers the underlying template first, then uses that template to extract structured data efficiently from any document that follows it.</p>
+
+<hr />
+
+<h2 id="illustrative-example">Illustrative Example</h2>
+
+<p>We illustrate TWIX’s capabilities via a document collection of police complaint records, provided by our collaborators. Two such records are shown below, and the structured data of the first record is shown left to it. In this document collection, every single record has a consistent visual template—they all consist of a table, a list of key-value pairs, followed by two additional tables. If we can infer such a template, along with the corresponding fields (e.g., table columns or keywords in key-value pairs), we can then use it to decompose a long and complex document that follows this template into a set of data blocks with simple structures, such as tables or key-value pairs.</p>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="https://data-people-group.github.io/images/twix/blog_example.png" style="width:100%" />
+  <figcaption style="text-align: left; width:100%; font-style: italic; margin: auto;">Structured data in police complaints records. *Actual data have been replaced for privacy.*</figcaption>
+</figure>
+
+<hr />
+
+<h2 id="introducing-twix">Introducing TWIX</h2>
+
+<h3 id="overview">Overview</h3>
+
+<p>TWIX follows a four-stage pipeline:</p>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="https://data-people-group.github.io/images/twix/workflow_blog.jpg" style="width:80%" />
+  <figcaption style="text-align: left; width:80%; font-style: italic; margin: auto;">TWIX’s workflow: Given a set of templatized documents, TWIX extracts raw text, infers the template, and then extracts structured data. </figcaption>
+</figure>
+
+<ol>
+  <li><strong>Phrase Extraction</strong>: Use Optical Character Recognition (OCR) tool to extract text phrases and bounding boxes.</li>
+  <li><strong>Field Inference</strong>: Cluster phrases by their visual location patterns to identify field candidates.</li>
+  <li><strong>Template Inference</strong>: Infer the document’s structure by inferring row labels with visual constraints based on inferred fields.</li>
+  <li><strong>Data Extraction</strong>: Apply the inferred template to extract structured data efficiently and accurately at scale.</li>
+</ol>
+
+<hr />
+
+<h2 id="key-techniques">Key Techniques</h2>
+
+<h3 id="1-field-inference-via-location-patterns-and-llms">1. Field Inference via Location Patterns and LLMs</h3>
+
+<p>Our key insight is that <em>fields tend to appear in similar locations across records</em>, while <em>the values for the same field can be different across records</em>.</p>
+
+<p>Consider the phrases extracted by an OCR tool (left figure below), where the location is the order of extraction (e.g., <code class="language-plaintext highlighter-rouge">Report Criteria</code> and <code class="language-plaintext highlighter-rouge">Date</code> in Record 1 are the 1st and 7th phrases). If we then assemble every location where a given phrase appears into a vector (right figure below), for fields like <code class="language-plaintext highlighter-rouge">Date</code> and <code class="language-plaintext highlighter-rouge">Number</code>, the difference in their location vectors is constant, since <code class="language-plaintext highlighter-rouge">Number</code> is always the next extracted phrase to <code class="language-plaintext highlighter-rouge">Date</code> in every record. Among all phrases in the document, typically only a small subset (corresponding to fields) exhibits the consistent location pattern as described above with constant differences. On the other hand, most values (e.g., <code class="language-plaintext highlighter-rouge">05-01</code>) appear randomly across records and their location vectors are often not consistent.</p>
+
+<p>TWIX uses a clustering approach to group phrases with consistent location patterns. When visual cues prove insufficient (e.g., the value for a field is constant across records), TWIX uses the semantic knowledge of LLMs. Instead of relying on LLMs to handle complex tasks, such as recognizing intricate visual layouts, we restrict their role to simple questions, like “Is this phrase a field or a value?”, making less-advanced but much cheaper LLMs capable of answering questions well.</p>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="https://data-people-group.github.io/images/twix/phrase_field.jpg" style="width:70%" />
+  <figcaption style="text-align: left; width:70%; font-style: italic; margin: auto;">TWIX extracts phrases from PDFs along with their bounding boxes and locations, and converts the locations into location vectors. </figcaption>
+</figure>
+
+<h3 id="2-template-inference-via-integer-linear-program">2. Template Inference via Integer Linear Program</h3>
+
+<p>TWIX models the template as a tree, where each node corresponds to a set of data blocks (tables or key-value pairs), and each edge denotes the nested relationship among data blocks. To infer structure, TWIX infers the labels of each row as a potential Key, Value, Key-Value, or Metadata row based on inferred fields, then solves a constrained optimization problem using Integer Linear Programming (ILP) to infer the template structure.</p>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="https://data-people-group.github.io/images/twix/template_blog.jpg" style="width:70%" />
+  <figcaption style="text-align: left; width:70%; font-style: italic; margin: auto;">Template of police complaint records. </figcaption>
+</figure>
+
+<hr />
+
+<h2 id="why-twix-wins">Why TWIX Wins</h2>
+
+<p>Once the template is inferred in a small document portion, a complex document can be decomposed into data blocks with simple structures, either tables or key-values. TWIX can then process the rest of the documents without any LLM calls. This means TWIX:</p>
+
+<ul>
+  <li><strong>Has zero cost</strong> to perform data extraction after template inference.</li>
+  <li><strong>Scales</strong> to large datasets.</li>
+  <li><strong>Has high accuracy</strong> due to template-based document decomposition.</li>
+  <li><strong>Maintains data relationships</strong>, preserving table and key-value structures automatically.</li>
+</ul>
+
+<hr />
+
+<h3 id="datasets">Datasets</h3>
+
+<p>With help from our collaborators and other sources, we collected two benchmarks:</p>
+
+<ul>
+  <li><strong>Q-Benchmark</strong>: 34 real-world datasets with available labeled data, focusing on evaluating the precision and recall of compared tools.</li>
+  <li><strong>S-Benchmark</strong>: 30 large datasets, around 2,133 documents and over two million tokens per dataset, focusing on evaluating scalability (latency and cost).</li>
+</ul>
+
+<hr />
+
+<h3 id="baselines">Baselines</h3>
+
+<p>We compare TWIX with six baselines:</p>
+
+<ul>
+  <li><strong>Amazon Textract</strong> and <strong>Azure AI Document Intelligence (AzureDI)</strong>: extract tables and key-value pairs from PDFs.</li>
+  <li><strong>vLLM-S</strong> and <strong>vLLM-C</strong> (vision-based LLMs powered by GPT-4 Vision).</li>
+  <li><strong>Evaporate-Direct (Eva-D)</strong> and <strong>Evaporate-Code (Eva-C)</strong> (text-based LLM systems).</li>
+</ul>
+
+<p>Results show TWIX outperforms the baselines by over 25% in precision and recall in Q-Benchmark, and is <strong>520× faster and 3786× cheaper</strong> than the most competitive baseline, GPT-4 Vision, in S-Benchmark.</p>
+
+<p>This demonstrates that template inference is crucial for data extraction from templatized documents, by reducing document complexity and enabling scalable and accurate extraction.</p>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="https://data-people-group.github.io/images/twix/quality.png" style="width:60%" />
+  <figcaption style="text-align: left; width:60%; font-style: italic; margin: auto;">Precision and Recall on Easy, Medium, and Hard Datasets in Q-Benchmark. </figcaption>
+</figure>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="https://data-people-group.github.io/images/twix/scalability.png" style="width:60%" />
+  <figcaption style="text-align: center; width:60%; font-style: italic; margin: auto;">Latency and Cost on S-Benchmark. </figcaption>
+</figure>
+
+<hr />
+
+<h2 id="interactive-user-interface">Interactive User Interface</h2>
+
+<p>While TWIX handily beats the baselines, template inference is never perfect. This led us to build a user interface to incorporate humans in the loop to further enhance the accuracy of data extraction.</p>
+
+<p>The UI allows users to:</p>
+
+<ul>
+  <li>Examine and edit the inferred template.</li>
+  <li>Update/add/delete inferred fields.</li>
+  <li>Adjust the hierarchical structure by updating/adding/deleting nodes and edges.</li>
+</ul>
+
+<figure style="text-align: center;
+    align-content: center;
+    font-size: 15px; 
+    margin: auto;
+    margin-bottom: 20px;">
+  <img src="https://data-people-group.github.io/images/twix/demo_template.jpg" style="width:50%" />
+  <figcaption style="text-align: left; width:50%; font-style: italic; margin: auto;">Interactive User Interfaces. </figcaption>
+</figure>
+
+<p>You can explore more here:</p>
+
+<p><a href="https://github.com/ucbepic/TWIX.git">https://github.com/ucbepic/TWIX.git</a></p>
+
+<hr />
+
+<h2 id="learn-more-and-try-it-out">Learn More and Try It Out</h2>
+
+<p>If you’re interested in learning more about TWIX’s approach, check out our research preprint.</p>
+
+<p>TWIX is an open-source project. The codebase includes:</p>
+
+<ul>
+  <li>Detailed instructions for using TWIX as a Python library.</li>
+  <li>A user interface mode for non-programmers.</li>
+  <li>Sample documents to get started.</li>
+</ul>
+
+<p>Try it out here:</p>
+
+<p><a href="https://github.com/ucbepic/TWIX.git">https://github.com/ucbepic/TWIX.git</a></p>
+
+                    ]]>
+                </content:encoded>
+                <guid isPermaLink="false">/blogs/2025/04/30/twix/</guid>
+                <description>
+                    
+                    TWIX is an open-source data extraction tool that reconstructs structured data from documents at scale, accurately and at low cost, by inferring the shared underlying visual template across documents
+                    
+                </description>
+                <pubDate>Wed, 30 Apr 2025 00:00:00 -0700</pubDate>
+                <author></author>
+            </item>
+        
+    
+        
+            <item>
                 <title>Interactive LLM-Powered Data Processing with DocWrangler</title>
                 <link>http://localhost:4000/blogs/2025/01/13/docwrangler/</link>
                 <content:encoded>
@@ -187,7 +616,7 @@
       <p>This iterative refinement is necessary because of a fundamental design challenge in complex LLM workflows—what <a href="https://arxiv.org/abs/2309.14459">Subramonyam et al.</a> call bridging the “gulf of envisioning” between your goals and effective LLM interactions. <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
     </li>
     <li id="fn:2" role="doc-endnote">
-      <p>LLM-powered data processing is a rapidly growing field, with many research teams and startups developing systems. Some, like DocETL, focus on executing open-ended dataflow operations (e.g., map, reduce), such as <a href="https://vldb.org/cidrdb/papers/2025/p12-liu.pdf">Palimpzest</a> from MIT, <a href="https://arxiv.org/abs/2407.11418">LOTUS</a> from Stanford, and <a href="https://arxiv.org/abs/2409.00847">Sycamore</a> from Aryn. Others target specific tasks, such as <a href="https://dl.acm.org/doi/10.1145/3613904.3642830">Lloom</a> for topic induction and analysis and <a href="https://dl.acm.org/doi/10.1145/3654777.3676366">DiscipLink</a> for aggregating and linking research papers based on user queries. <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+      <p>LLM-powered data processing is a rapidly growing field, with many research teams and startups developing systems. Some, like DocETL, focus on executing open-ended dataflow operations (e.g., map, reduce), such as <a href="https://vldb.org/cidrdb/papers/2025/p12-liu.pdf">Palimpzest</a> from MIT, <a href="https://arxiv.org/abs/2407.11418">LOTUS</a> from Stanford, and <a href="https://arxiv.org/abs/2409.00847">Sycamore</a> from Aryn. Others target specific tasks, such as <a href="https://dl.acm.org/doi/10.1145/3613904.3642830">LLooM</a> for topic induction and analysis and <a href="https://dl.acm.org/doi/10.1145/3654777.3676366">DiscipLink</a> for aggregating and linking research papers based on user queries. <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
     </li>
     <li id="fn:3" role="doc-endnote">
       <p>Making this work required solving some interesting technical challenges, particularly around managing context windows (since datasets, pipelines, and sample outputs can easily exceed LLM token limits)—perhaps we’ll write another post about those solutions later, but feel free to ask about them on <a href="https://discord.gg/fHp7B2X3xx">Discord</a> if you’re curious! <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
